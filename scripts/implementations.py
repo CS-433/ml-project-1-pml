@@ -1,5 +1,11 @@
 import numpy as np
 
+def nomalize(data):
+    return (data-np.min(data))/(np.max(data)-np.min(data))
+
+def standardize(data):
+    return (data - np.average(data)) / (np.std(data))
+
 def compute_loss(y, tx, w):
     """Calculate the loss."""
     loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
