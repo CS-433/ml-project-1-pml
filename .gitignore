@@ -1,2 +1,4 @@
 data/test.csv
 data/train.csv
+*DS_Store
+*.code-workspace
