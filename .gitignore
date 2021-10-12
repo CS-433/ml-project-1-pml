@@ -2,3 +2,5 @@ data/test.csv
 data/train.csv
 *DS_Store
 *.code-workspace
+*.ipynb_checkpoints*
+*__pycache__*
