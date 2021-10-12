@@ -4,3 +4,4 @@ data/train.csv
 *.code-workspace
 *.ipynb_checkpoints*
 *__pycache__*
+scripts/*.csv
