@@ -1,6 +1,6 @@
 import numpy as np
 
-def nomalize(data):
+def normalize(data):
     return (data-np.min(data))/(np.max(data)-np.min(data))
 
 def standardize(data):
