@@ -8,9 +8,11 @@ def standardize(data):
 
 def compute_loss(y, tx, w):
     """Calculate the loss."""
-    loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
+    #loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
+    e = y - tx.dot(w)
+    mse = e.dot(e) / (2 * len(e))
     # loss = np.absolute(y - tx.dot(w)).sum()/ len(y)   #MAE
-    return loss
+    return mse
 
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
@@ -79,3 +81,61 @@ def ridge_regression(y, tx, lambda_):
     w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
     loss = ((y - tx @ w)**2).sum() * 0.5 / len(y)
     return w, loss
+
+def build_k_indices(y, k_fold, seed):
+    """build k indices for k-fold."""
+    num_row = y.shape[0]
+    interval = int(num_row / k_fold)
+    np.random.seed(seed)
+    indices = np.random.permutation(num_row)
+    k_indices = [indices[k * interval: (k + 1) * interval]
+                 for k in range(k_fold)]
+    return np.array(k_indices)
+
+def build_poly(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    for deg in range(degree):
+        matdeg=np.full((x.shape[0], x.shape[1]), deg)
+        x=np.c_[x, x**matdeg]
+
+    return x
+
+def split_data(x, y, ratio, seed=1):
+    """split the dataset based on the split ratio. If ratio is 0.8 
+    you will have 80% of your data set dedicated to training 
+    and the rest dedicated to testing
+    """
+    # set seed
+    np.random.seed(seed)
+    length = len(y)
+    indices = np.random.permutation(len(y))#np.arange(length)
+    #np.random.shuffle(indices)
+    length_tr = np.ceil(ratio * length).astype(int)
+    x_train = x[indices][:length_tr]
+    x_test = x[indices][length_tr:]
+    y_train = y[indices][:length_tr]
+    y_test = y[indices][length_tr:]
+    return x_train, x_test, y_train, y_test
+
+def cross_validation(y, x, k_indices, k, lambda_, degree):
+    """return the loss of ridge regression."""
+
+    indices_te=k_indices[k]
+    indices_tr=np.delete(k_indices, k, axis=0)
+    indices_tr= np.concatenate(indices_tr, axis= None)
+    x_tr=x[indices_tr]
+    y_tr=y[indices_tr]
+    x_te=x[indices_te]
+    y_te=y[indices_te]
+    
+    
+    x_tr_poly=build_poly(x_tr, degree)
+    x_te_poly=build_poly(x_te, degree)
+    
+    weights= ridge_regression(y_tr, x_tr_poly, lambda_)
+    weights.reshape(x_tr_poly.shape[1],-1)
+    
+    loss_tr=compute_loss(y_tr, x_tr_poly, weights)
+    loss_te=compute_loss(y_te, x_te_poly, weights)
+    
+    return loss_tr, loss_te, weights
