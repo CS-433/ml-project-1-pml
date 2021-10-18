@@ -97,7 +97,6 @@ def build_poly(x, degree):
     for deg in range(degree):
         matdeg=np.full((x.shape[0], x.shape[1]), deg)
         x=np.c_[x, x**matdeg]
-
     return x
 
 def split_data(x, y, ratio, seed=1):
@@ -132,8 +131,7 @@ def cross_validation(y, x, k_indices, k, lambda_, degree):
     x_tr_poly=build_poly(x_tr, degree)
     x_te_poly=build_poly(x_te, degree)
     
-    weights= ridge_regression(y_tr, x_tr_poly, lambda_)
-    weights.reshape(x_tr_poly.shape[1],-1)
+    weights, _= ridge_regression(y_tr, x_tr_poly, lambda_)
     
     loss_tr=compute_loss(y_tr, x_tr_poly, weights)
     loss_te=compute_loss(y_te, x_te_poly, weights)
