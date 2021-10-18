@@ -100,6 +100,12 @@ def build_poly(x, degree):
         x=np.c_[x, x**matdeg]
     return x
 
+def build_poly_separated(x, degree):
+    mat_tX = []
+    for i in range(4):
+        mat_tX.append(build_poly(x[i], degree))
+    return mat_tX
+
 def split_data(x, y, ratio, seed=1):
     """split the dataset based on the split ratio. If ratio is 0.8 
     you will have 80% of your data set dedicated to training 
