@@ -93,28 +93,20 @@ def build_k_indices(y, k_fold, seed):
                  for k in range(k_fold)]
     return np.array(k_indices)
 
-def build_poly(x, degree):
+def build_poly(x, degree, log):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
     for deg in range(degree+1):
         matdeg=np.full((x.shape[0], x.shape[1]), deg)
         x=np.c_[x, x**matdeg]
+        if log:
+            if np.all(x[:,1] > 0):
+                x = np.c_[x, np.log(x[:,1])]
     return x
 
-def build_log(x):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    x=np.c_[x, np.log(x)]
-    return x
-
-def build_poly_separated(x, degree):
+def build_poly_separated(x, degree, log=False):
     mat_tX = []
     for i in range(4):
-        mat_tX.append(build_poly(x[i], degree))
-    return mat_tX
-
-def build_log_separated(x):
-    mat_tX = []
-    for i in range(4):
-        mat_tX.append(build_poly(x[i]))
+        mat_tX.append(build_poly(x[i], degree, log))
     return mat_tX
 
 def split_data(x, y, ratio, seed=1):
@@ -167,6 +159,7 @@ def separate_dataset(tX, ids, y = None):
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
         mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])
+        tX_list[i] = np.delete(tX_list[i], 22, axis=1)
         tX_list[i] = np.where(tX_list[i][:, (tX_list[i] != -999).any(axis=0)]==-999, mean, tX_list[i][:, (tX_list[i] != -999).any(axis=0)])
         if y is not None:
             y_list.append(y[indices])
