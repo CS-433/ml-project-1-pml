@@ -218,27 +218,3 @@ def separated_eval(weights_list, tX_test_list):
     for i in range (4):
         y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
     return y_pred_list
-
-def PCA(x, threshold):
-    """Apply PCA to a given set of datapoints in d-dimension"""
-    cov_x = np.cov(x.T)
-    eigenValues, eigenVectors = np.linalg.eig(cov_x)
-    idx = eigenValues.argsort()[::-1]   
-    eigenValues = eigenValues[idx]
-    eigenVectors = eigenVectors[:,idx]
-    
-    eig_val = np.asarray(eigenValues)
-    eig_vec = np.asarray(eigenVectors)
-    
-    eig_val=eig_val/sum(eig_val)
-    k=-1
-    sum_=0
-    while(sum_<threshold):
-        k+=1
-        sum_=sum_+eig_val[k]
-    
-    #keep only kth first dimension
-    
-    eig_vec=eig_vec[:,:k]
-    
-    return eig_val, eig_vec, k
