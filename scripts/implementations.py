@@ -103,7 +103,6 @@ def build_poly(x, degree):
 def build_log(x):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
     x=np.c_[x, np.log(x)]
-    x=np.nan_to_num(x, nan=-999)
     return x
 
 def build_poly_separated(x, degree):
@@ -167,6 +166,8 @@ def separate_dataset(tX, ids, y = None):
         indices = np.isclose(tX[:,22], i)
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
+        mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])
+        tX_list[i] = np.where(tX_list[i][:, (tX_list[i] != -999).any(axis=0)]==-999, mean, tX_list[i][:, (tX_list[i] != -999).any(axis=0)])
         if y is not None:
             y_list.append(y[indices])
     if y is not None:
@@ -187,4 +188,3 @@ def separated_eval(weights_list, tX_test_list):
     for i in range (4):
         y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
     return y_pred_list
-
