@@ -94,16 +94,24 @@ def build_k_indices(y, k_fold):
                  for k in range(k_fold)]
     return np.array(k_indices)
 
-def build_poly(x, degree):
+def build_poly_old(x, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
     for deg in range(degree+1):
         matdeg=np.full((x.shape[0], x.shape[1]), deg)
-        x=np.c_[x, x**matdeg]
+        x=np.c_[x, x**deg]
     return x
+
+def build_poly(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    poly = np.ones((len(x), 1))
+    for deg in range(1, degree+1):
+        poly = np.c_[poly, np.power(x, deg)]
+    return poly
 
 def build_log(x):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
     x=np.c_[x, np.log(x)]
+    x=np.nan_to_num(x, nan=-999)
     return x
 
 def build_poly_separated(x, degree):
@@ -163,7 +171,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None):
 def grid_search(y, tX, function):
     # Ridge regression with K-fold
     k_fold = 4
-    degrees = range(1, 4)
+    degrees = range(1, 3)
     lambdas = np.logspace(-4, 0, 30)
 
     k_indices = build_k_indices(y, k_fold)
@@ -175,7 +183,7 @@ def grid_search(y, tX, function):
         for index_lambda, lambda_ in enumerate(lambdas):
             loss_te_tmp = 0
             for k in range(k_fold):
-                _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_))
+                _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_,))
                 loss_te_tmp = loss_te_tmp + loss_te
             rmse_te_tmp2.append(np.sqrt(2 * loss_te_tmp / k_fold))
         rmse_te_tmp.append(min(rmse_te_tmp2))
@@ -184,7 +192,7 @@ def grid_search(y, tX, function):
     BestLambda = BestLambdaForDeg[np.argmin(rmse_te_tmp)]
     rmse_te = min(rmse_te_tmp)
 
-    return BestDeg, BestLambda
+    return rmse_te, BestDeg, BestLambda
 
 
 def separate_dataset(tX, ids, y = None):
@@ -195,8 +203,6 @@ def separate_dataset(tX, ids, y = None):
         indices = np.isclose(tX[:,22], i)
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
-        mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])
-        tX_list[i] = np.where(tX_list[i][:, (tX_list[i] != -999).any(axis=0)]==-999, mean, tX_list[i][:, (tX_list[i] != -999).any(axis=0)])
         if y is not None:
             y_list.append(y[indices])
     if y is not None:
@@ -217,3 +223,4 @@ def separated_eval(weights_list, tX_test_list):
     for i in range (4):
         y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
     return y_pred_list
+
