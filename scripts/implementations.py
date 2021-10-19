@@ -135,7 +135,7 @@ def split_data(x, y, ratio, seed=1):
     y_test = y[indices][length_tr:]
     return x_train, x_test, y_train, y_test
 
-def cross_validation(y, x, k_indices, k, degree, function, args = None):
+def cross_validation(y, x, k_indices, k, degree, function, args = None, log = False):
     """return the loss of ridge regression."""
 
     indices_te = k_indices[k]
@@ -147,8 +147,8 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None):
     y_te = y[indices_te]
     
     
-    x_tr_poly = build_poly(x_tr, degree)
-    x_te_poly = build_poly(x_te, degree)
+    x_tr_poly = build_poly(x_tr, degree, log)
+    x_te_poly = build_poly(x_te, degree, log)
     
     if (function == ridge_regression):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
@@ -160,11 +160,11 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None):
     return loss_tr, loss_te, weights
 
 
-def grid_search(y, tX, function):
+def grid_search(y, tX, function, log = False):
     # Ridge regression with K-fold
     k_fold = 4
     degrees = range(1, 3)
-    lambdas = np.logspace(-4, 0, 30)
+    lambdas = np.logspace(-4, 0, 3)
 
     k_indices = build_k_indices(y, k_fold)
 
@@ -175,7 +175,7 @@ def grid_search(y, tX, function):
         for index_lambda, lambda_ in enumerate(lambdas):
             loss_te_tmp = 0
             for k in range(k_fold):
-                _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_,))
+                _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_,), log)
                 loss_te_tmp = loss_te_tmp + loss_te
             rmse_te_tmp2.append(np.sqrt(2 * loss_te_tmp / k_fold))
         rmse_te_tmp.append(min(rmse_te_tmp2))
