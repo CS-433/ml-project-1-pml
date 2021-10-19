@@ -163,8 +163,8 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None):
 def grid_search(y, tX, function):
     # Ridge regression with K-fold
     k_fold = 4
-    degrees = range(1, 3)
-    lambdas = np.logspace(-4, 0, 30)
+    degrees = range(1, 6)
+    lambdas = np.logspace(-5, 0, 30)
 
     k_indices = build_k_indices(y, k_fold)
 
