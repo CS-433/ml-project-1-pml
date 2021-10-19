@@ -106,9 +106,14 @@ def build_poly(x, degree, log = False):
     poly = np.ones((len(x), 1))
     for deg in range(1, degree+1):
         poly = np.c_[poly, np.power(x, deg)]
-        if log:
-            if np.all(x[:,1] > 0):
-                x = np.c_[x, np.log(x[:,1])]
+
+    log_ = np.ones((len(x), 1))
+    if log:
+        for i in range(x.shape[1]):
+            if np.all(x[:,i] > 0):
+                log_ = np.c_[log_, np.log(x[:,i])]
+
+        poly = np.c_[poly, log_[:,1:]]
     return poly
 
 
