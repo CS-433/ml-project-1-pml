@@ -9,11 +9,11 @@ def standardize(data):
 
 def compute_loss(y, tx, w):
     """Calculate the loss."""
-    #loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
-    e = y - tx.dot(w)
-    mse = e.dot(e) / (2 * len(e))
+    loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
+    # e = y - tx.dot(w)
+    # mse = e.dot(e) / (2 * len(e))
     # loss = np.absolute(y - tx.dot(w)).sum()/ len(y)   #MAE
-    return mse
+    return loss
 
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
@@ -73,14 +73,16 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 def least_squares(y, tx):
     """calculate the least squares solution."""
     w = np.linalg.solve(tx.T.dot(tx), tx.T.dot(y))
-    mse = (((y - tx@w)**2).sum()) / (2 * len(y))
+    # mse = (((y - tx@w)**2).sum()) / (2 * len(y))
+    mse = compute_loss(y, tx, w)
     return w, mse 
 
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""
     lambda_pr = lambda_ * 2 * len(y)
     w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
-    loss = ((y - tx @ w)**2).sum() * 0.5 / len(y)
+    # loss = ((y - tx @ w)**2).sum() * 0.5 / len(y)
+    loss = compute_loss(y, tx, w)
     return w, loss
 
 def build_k_indices(y, k_fold):
