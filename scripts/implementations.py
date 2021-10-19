@@ -100,10 +100,22 @@ def build_poly(x, degree):
         x=np.c_[x, x**matdeg]
     return x
 
+def build_log(x):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    x=np.c_[x, np.log(x)]
+    x=np.nan_to_num(x, nan=-999)
+    return x
+
 def build_poly_separated(x, degree):
     mat_tX = []
     for i in range(4):
         mat_tX.append(build_poly(x[i], degree))
+    return mat_tX
+
+def build_log_separated(x):
+    mat_tX = []
+    for i in range(4):
+        mat_tX.append(build_poly(x[i]))
     return mat_tX
 
 def split_data(x, y, ratio, seed=1):
