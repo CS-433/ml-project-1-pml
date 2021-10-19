@@ -101,34 +101,16 @@ def build_poly_old(x, degree):
         x=np.c_[x, x**deg]
     return x
 
-def build_poly(x, degree):
+def build_poly(x, degree, log = False):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
     poly = np.ones((len(x), 1))
     for deg in range(1, degree+1):
         poly = np.c_[poly, np.power(x, deg)]
-    return poly
-
-def build_log(x):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    x=np.c_[x, np.log(x)]
-    x=np.nan_to_num(x, nan=-999)
-    return x
-
-def build_poly_separated(x, degree):
-    mat_tX = []
-    for i in range(4):
-        mat_tX.append(build_poly(x[i], degree))
-    return mat_tX
-
-def build_poly(x, degree, log):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    for deg in range(degree+1):
-        matdeg=np.full((x.shape[0], x.shape[1]), deg)
-        x=np.c_[x, x**matdeg]
         if log:
             if np.all(x[:,1] > 0):
                 x = np.c_[x, np.log(x[:,1])]
-    return x
+    return poly
+
 
 def build_poly_separated(x, degree, log=False):
     mat_tX = []
