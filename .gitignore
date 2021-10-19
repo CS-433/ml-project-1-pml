@@ -5,3 +5,4 @@ data/train.csv
 *.ipynb_checkpoints*
 *__pycache__*
 scripts/*.csv
+.vscode/settings.json
