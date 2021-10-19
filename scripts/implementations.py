@@ -1,4 +1,5 @@
 import numpy as np
+from proj1_helpers import *
 
 def normalize(data):
     return (data-np.min(data))/(np.max(data)-np.min(data))
@@ -99,6 +100,24 @@ def build_poly(x, degree):
         x=np.c_[x, x**matdeg]
     return x
 
+def build_log(x):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    x=np.c_[x, np.log(x)]
+    x=np.nan_to_num(x, nan=-999)
+    return x
+
+def build_poly_separated(x, degree):
+    mat_tX = []
+    for i in range(4):
+        mat_tX.append(build_poly(x[i], degree))
+    return mat_tX
+
+def build_log_separated(x):
+    mat_tX = []
+    for i in range(4):
+        mat_tX.append(build_poly(x[i]))
+    return mat_tX
+
 def split_data(x, y, ratio, seed=1):
     """split the dataset based on the split ratio. If ratio is 0.8 
     you will have 80% of your data set dedicated to training 
@@ -137,3 +156,35 @@ def cross_validation(y, x, k_indices, k, lambda_, degree):
     loss_te=compute_loss(y_te, x_te_poly, weights)
     
     return loss_tr, loss_te, weights
+
+
+
+def separate_dataset(tX, ids, y = None):
+    tX_list = []
+    y_list = []
+    ids_list = []
+    for i in range(4):
+        indices = np.isclose(tX[:,22], i)
+        tX_list.append(tX[indices])
+        ids_list.append(ids[indices])
+        if y is not None:
+            y_list.append(y[indices])
+    if y is not None:
+        return tX_list, ids_list, y_list
+    return tX_list, ids_list
+
+def separated_train(tX_list, y_list, function, args):
+    weights = []
+    loss = []
+    for i in range(4):
+        w, l = function(y_list[i], tX_list[i], args)
+        weights.append(w)
+        loss.append(l)
+    return weights, loss
+
+def separated_eval(weights_list, tX_test_list):
+    y_pred_list = []
+    for i in range (4):
+        y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
+    return y_pred_list
+
