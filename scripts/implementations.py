@@ -106,9 +106,14 @@ def build_poly(x, degree, log = False):
     poly = np.ones((len(x), 1))
     for deg in range(1, degree+1):
         poly = np.c_[poly, np.power(x, deg)]
-        if log:
-            if np.all(x[:,1] > 0):
-                x = np.c_[x, np.log(x[:,1])]
+
+    log_ = np.ones((len(x), 1))
+    if log:
+        for i in range(x.shape[1]):
+            if np.all(x[:,i] > 0):
+                log_ = np.c_[log_, np.log(x[:,i])]
+
+        poly = np.c_[poly, log_[:,1:]]
     return poly
 
 
@@ -135,7 +140,7 @@ def split_data(x, y, ratio, seed=1):
     y_test = y[indices][length_tr:]
     return x_train, x_test, y_train, y_test
 
-def cross_validation(y, x, k_indices, k, degree, function, args = None):
+def cross_validation(y, x, k_indices, k, degree, function, args = None, log = False):
     """return the loss of ridge regression."""
 
     indices_te = k_indices[k]
@@ -147,8 +152,8 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None):
     y_te = y[indices_te]
     
     
-    x_tr_poly = build_poly(x_tr, degree)
-    x_te_poly = build_poly(x_te, degree)
+    x_tr_poly = build_poly(x_tr, degree, log)
+    x_te_poly = build_poly(x_te, degree, log)
     
     if (function == ridge_regression):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
@@ -160,7 +165,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None):
     return loss_tr, loss_te, weights
 
 
-def grid_search(y, tX, function):
+def grid_search(y, tX, function, log = False):
     # Ridge regression with K-fold
     k_fold = 4
     degrees = range(1, 6)
@@ -175,7 +180,7 @@ def grid_search(y, tX, function):
         for index_lambda, lambda_ in enumerate(lambdas):
             loss_te_tmp = 0
             for k in range(k_fold):
-                _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_,))
+                _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_,), log)
                 loss_te_tmp = loss_te_tmp + loss_te
             rmse_te_tmp2.append(np.sqrt(2 * loss_te_tmp / k_fold))
         rmse_te_tmp.append(min(rmse_te_tmp2))
@@ -218,4 +223,3 @@ def separated_eval(weights_list, tX_test_list):
     for i in range (4):
         y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
     return y_pred_list
-
