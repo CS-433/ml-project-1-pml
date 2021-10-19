@@ -83,11 +83,12 @@ def ridge_regression(y, tx, lambda_):
     loss = ((y - tx @ w)**2).sum() * 0.5 / len(y)
     return w, loss
 
-def build_k_indices(y, k_fold, seed):
+def build_k_indices(y, k_fold):
     """build k indices for k-fold."""
+    #améliorer pour ne pas sauter qq samples ?
     num_row = y.shape[0]
     interval = int(num_row / k_fold)
-    np.random.seed(seed)
+    #np.random.seed(seed)
     indices = np.random.permutation(num_row)
     k_indices = [indices[k * interval: (k + 1) * interval]
                  for k in range(k_fold)]
@@ -103,7 +104,6 @@ def build_poly(x, degree):
 def build_log(x):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
     x=np.c_[x, np.log(x)]
-    x=np.nan_to_num(x, nan=-999)
     return x
 
 def build_poly_separated(x, degree):
@@ -135,28 +135,56 @@ def split_data(x, y, ratio, seed=1):
     y_test = y[indices][length_tr:]
     return x_train, x_test, y_train, y_test
 
-def cross_validation(y, x, k_indices, k, lambda_, degree):
+def cross_validation(y, x, k_indices, k, degree, function, args = None):
     """return the loss of ridge regression."""
 
-    indices_te=k_indices[k]
-    indices_tr=np.delete(k_indices, k, axis=0)
-    indices_tr= np.concatenate(indices_tr, axis= None)
-    x_tr=x[indices_tr]
-    y_tr=y[indices_tr]
-    x_te=x[indices_te]
-    y_te=y[indices_te]
+    indices_te = k_indices[k]
+    indices_tr = np.delete(k_indices, k, axis=0)
+    indices_tr = np.concatenate(indices_tr, axis= None)
+    x_tr = x[indices_tr]
+    y_tr = y[indices_tr]
+    x_te = x[indices_te]
+    y_te = y[indices_te]
     
     
-    x_tr_poly=build_poly(x_tr, degree)
-    x_te_poly=build_poly(x_te, degree)
+    x_tr_poly = build_poly(x_tr, degree)
+    x_te_poly = build_poly(x_te, degree)
     
-    weights, _= ridge_regression(y_tr, x_tr_poly, lambda_)
-    
-    loss_tr=compute_loss(y_tr, x_tr_poly, weights)
-    loss_te=compute_loss(y_te, x_te_poly, weights)
+    if (function == ridge_regression):
+        weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
+    elif (function == least_squares):
+        weights, loss_tr = least_squares(y_tr, x_tr_poly)
+
+    loss_te = compute_loss(y_te, x_te_poly, weights)
     
     return loss_tr, loss_te, weights
 
+
+def grid_search(y, tX, function):
+    # Ridge regression with K-fold
+    k_fold = 4
+    degrees = range(1, 4)
+    lambdas = np.logspace(-4, 0, 30)
+
+    k_indices = build_k_indices(y, k_fold)
+
+    rmse_te_tmp = []
+    BestLambdaForDeg=[]
+    for index_degree, degree in enumerate(degrees):
+        rmse_te_tmp2 = []
+        for index_lambda, lambda_ in enumerate(lambdas):
+            loss_te_tmp = 0
+            for k in range(k_fold):
+                _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_))
+                loss_te_tmp = loss_te_tmp + loss_te
+            rmse_te_tmp2.append(np.sqrt(2 * loss_te_tmp / k_fold))
+        rmse_te_tmp.append(min(rmse_te_tmp2))
+        BestLambdaForDeg.append(lambdas[np.argmin(rmse_te_tmp2)])
+    BestDeg = degrees[np.argmin(rmse_te_tmp)]
+    BestLambda = BestLambdaForDeg[np.argmin(rmse_te_tmp)]
+    rmse_te = min(rmse_te_tmp)
+
+    return BestDeg, BestLambda
 
 
 def separate_dataset(tX, ids, y = None):
@@ -167,6 +195,8 @@ def separate_dataset(tX, ids, y = None):
         indices = np.isclose(tX[:,22], i)
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
+        mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])
+        tX_list[i] = np.where(tX_list[i][:, (tX_list[i] != -999).any(axis=0)]==-999, mean, tX_list[i][:, (tX_list[i] != -999).any(axis=0)])
         if y is not None:
             y_list.append(y[indices])
     if y is not None:
@@ -187,4 +217,3 @@ def separated_eval(weights_list, tX_test_list):
     for i in range (4):
         y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
     return y_pred_list
-
