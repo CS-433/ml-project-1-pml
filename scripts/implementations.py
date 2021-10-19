@@ -94,7 +94,7 @@ def build_k_indices(y, k_fold, seed):
 
 def build_poly(x, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    for deg in range(degree):
+    for deg in range(degree+1):
         matdeg=np.full((x.shape[0], x.shape[1]), deg)
         x=np.c_[x, x**matdeg]
     return x
