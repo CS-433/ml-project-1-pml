@@ -118,10 +118,33 @@ def build_poly(x, degree, log = False):
         poly = np.c_[poly, log_[:,1:]]
     return poly
 
+def build_poly_log(x_tr, degree, log = False, x_te = None):
+    poly_tr = np.ones((len(x_tr), 1))
+    for deg in range(1, degree+1):
+        poly_tr = np.c_[poly_tr, np.power(x_tr, deg)]
+
+    if x_te is not None:
+        poly_te = np.ones((len(x_te), 1))
+        for deg in range(1, degree+1):
+            poly_te = np.c_[poly_te, np.power(x_te, deg)]
+
+    log_tr = np.ones((len(x_tr), 1))
+    log_te = np.ones((len(x_te), 1))
+
+    if log:
+        for i in range(x_tr.shape[1]):
+            if (np.all(x_tr[:,i] > 0) and np.all(x_te[:,i] > 0)):
+                log_tr = np.c_[log_tr, np.log(x_tr[:,i])]
+                log_te = np.c_[log_te, np.log(x_te[:,i])]
+        poly_tr = np.c_[poly_tr, log_tr[:,1:]]
+        poly_te = np.c_[poly_te, log_te[:,1:]]
+
+    return poly_tr, poly_te
+
 
 def build_poly_separated(x, degree, log=False):
     mat_tX = []
-    for i in range(4):
+    for i in range(3):
         mat_tX.append(build_poly(x[i], degree, log))
     return mat_tX
 
@@ -153,9 +176,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
     x_te = x[indices_te]
     y_te = y[indices_te]
     
-    
-    x_tr_poly = build_poly(x_tr, degree, log)
-    x_te_poly = build_poly(x_te, degree, log)
+    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
     
     if (function == ridge_regression):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
@@ -194,8 +215,11 @@ def separate_dataset(tX, ids, y = None):
     tX_list = []
     y_list = []
     ids_list = []
-    for i in range(4):
-        indices = np.isclose(tX[:,22], i)
+    for i in range(3):
+        if i < 2:
+            indices = np.isclose(tX[:,22], i)
+        else:
+            indices = (np.isclose(tX[:,22], i) or np.isclose(tX[:,22], i+1))
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
         mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])
@@ -210,7 +234,7 @@ def separate_dataset(tX, ids, y = None):
 def separated_train(tX_list, y_list, function, args):
     weights = []
     loss = []
-    for i in range(4):
+    for i in range(3):
         w, l = function(y_list[i], tX_list[i], args)
         weights.append(w)
         loss.append(l)
@@ -218,6 +242,6 @@ def separated_train(tX_list, y_list, function, args):
 
 def separated_eval(weights_list, tX_test_list):
     y_pred_list = []
-    for i in range (4):
+    for i in range(3):
         y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
     return y_pred_list
