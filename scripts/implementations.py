@@ -167,7 +167,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
     return loss_tr, loss_te, weights
 
 
-def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 6), lambdas = np.logspace(-5, 0, 30)):
+def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-6, -1, 20)):
     # Ridge regression with K-fold
     k_indices = build_k_indices(y, k_fold)
 
