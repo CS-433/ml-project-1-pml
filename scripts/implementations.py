@@ -219,7 +219,7 @@ def separate_dataset(tX, ids, y = None):
         if i < 2:
             indices = np.isclose(tX[:,22], i)
         else:
-            indices = (np.isclose(tX[:,22], i) or np.isclose(tX[:,22], i+1))
+            indices = np.any((np.isclose(tX[:,22], i), np.isclose(tX[:,22], i+1)), axis = 0)
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
         mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])
