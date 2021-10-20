@@ -188,7 +188,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
     return loss_tr, loss_te, weights
 
 
-def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-6, -1, 20)):
+def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-7, -2, 20)):
     # Ridge regression with K-fold
     k_indices = build_k_indices(y, k_fold)
 
@@ -222,7 +222,7 @@ def separate_dataset(tX, ids, y = None):
             indices = np.any((np.isclose(tX[:,22], i), np.isclose(tX[:,22], i+1)), axis = 0)
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
-        mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])
+        mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])  # C'est juste ici ???
         tX_list[i] = np.delete(tX_list[i], 22, axis=1)
         tX_list[i] = np.where(tX_list[i][:, (tX_list[i] != -999).any(axis=0)]==-999, mean, tX_list[i][:, (tX_list[i] != -999).any(axis=0)])
         if y is not None:
