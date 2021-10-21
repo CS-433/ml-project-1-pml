@@ -222,16 +222,15 @@ def separate_dataset(tX, ids, y = None):
             indices = np.any((np.isclose(tX[:,22], i), np.isclose(tX[:,22], i+1)), axis = 0)
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
-        print(tX_list[i] != -999)
-        print((tX_list[i] != -999).shape)
-        mean= np.mean(tX_list[i], axis=0,where=tX_list[i] != -999)
-        #mean = np.mean(tX_list[i][:,0][tX_list[i][:,0] != -999])  # C'est juste ici ???
-        #median=np.median(tX_list[i][:,0][tX_list[i][:,0] != -999])
-        #tX_list[i] = np.delete(tX_list[i], 22, axis=1)
 
-        tX_list[i] = np.where(tX_list[i][:, (tX_list[i] != -999).any(axis=0)]==-999, mean, tX_list[i][:, (tX_list[i] != -999).any(axis=0)])
-        tX_list[i] = np.delete(tX_list[i], 22, axis=1)
-        #tX_list[i] = np.where(tX_list[i][:, (tX_list[i] != -999).any(axis=0)]==-999, median, tX_list[i][:, (tX_list[i] != -999).any(axis=0)])
+        tX_list[i] = np.delete(tX_list[i], 22, axis=1) #Delete 22nd column
+        tX_list[i] = tX_list[i][:, ~np.all(tX_list[i][1:] == tX_list[i][:-1], axis=0)] #Delete column with all the same values (so the columns of -999)
+
+        mean = np.mean(tX_list[i], axis = 0, where = tX_list[i] != -999)
+        #median = np.median(tX_list[i], axis = 0, where = tX_list[i] != -999)
+
+        tX_list[i] = np.where(tX_list[i] == -999, mean, tX_list[i])
+
         if y is not None:
             y_list.append(y[indices])
     if y is not None:
