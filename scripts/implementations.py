@@ -7,6 +7,11 @@ def normalize(data):
 def standardize(data):
     return (data - np.average(data)) / (np.std(data))
 
+def sigmoid(t):
+    """apply the sigmoid function on t."""
+    sigm = 1 / (1 + np.exp(-t))
+    return sigm
+
 def compute_loss(y, tx, w):
     """Calculate the loss."""
     loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
@@ -15,9 +20,19 @@ def compute_loss(y, tx, w):
     # loss = np.absolute(y - tx.dot(w)).sum()/ len(y)   #MAE
     return loss
 
+def cross_entropy_loss(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    loss = -np.sum(y * np.log(sigmoid(tx @ w)) + (1-y) * np.log(1 - sigmoid(tx @ w)))
+    return loss
+
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
     grad = -tx.T.dot(y - tx.dot(w))/len(y)
+    return grad
+
+def cross_entropy_gradient(y, tx, w):
+    """compute the gradient of cross entropy loss."""
+    grad = tx.T @ (sigmoid(tx @ w) - y)
     return grad
 
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
@@ -84,6 +99,10 @@ def ridge_regression(y, tx, lambda_):
     # loss = ((y - tx @ w)**2).sum() * 0.5 / len(y)
     loss = compute_loss(y, tx, w)
     return w, loss
+
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
+
+    return w, loss    
 
 def build_k_indices(y, k_fold):
     """build k indices for k-fold."""
