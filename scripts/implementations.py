@@ -227,9 +227,10 @@ def separate_dataset(tX, ids, y = None):
         tX_list[i] = tX_list[i][:, ~np.all(tX_list[i][1:] == tX_list[i][:-1], axis=0)] #Delete column with all the same values (so the columns of -999)
 
         mean = np.mean(tX_list[i], axis = 0, where = tX_list[i] != -999)
-        #median = np.median(tX_list[i], axis = 0, where = tX_list[i] != -999)
+        tX_with_NaN=np.where(tX_list[i] == -999, np.nan, tX_list[i])
+        median = np.nanmedian(tX_list[i], axis = 0, where = tX_list[i] != -999)
 
-        tX_list[i] = np.where(tX_list[i] == -999, mean, tX_list[i])
+        tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
 
         if y is not None:
             y_list.append(y[indices])
