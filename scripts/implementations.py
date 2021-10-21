@@ -22,7 +22,7 @@ def compute_loss(y, tx, w):
 
 def cross_entropy_loss(y, tx, w):
     """compute the loss: negative log likelihood."""
-    loss = -np.sum(y * np.log(sigmoid(tx @ w)) + (1-y) * np.log(1 - sigmoid(tx @ w)))
+    loss = -np.sum(y.reshape((-1,1)) * np.log(sigmoid(tx @ w)) + (1-y.reshape((-1,1))) * np.log(1 - sigmoid(tx @ w)))
     return loss
 
 def compute_gradient(y, tx, w):
@@ -32,8 +32,9 @@ def compute_gradient(y, tx, w):
 
 def cross_entropy_gradient(y, tx, w):
     """compute the gradient of cross entropy loss."""
-    grad = tx.T @ (sigmoid(tx @ w) - y)
+    grad = tx.T @ (sigmoid(tx @ w) - y.reshape((-1,1)))
     return grad
+
 
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
@@ -85,6 +86,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
+
 def least_squares(y, tx):
     """calculate the least squares solution."""
     w = np.linalg.solve(tx.T.dot(tx), tx.T.dot(y))
@@ -100,9 +102,34 @@ def ridge_regression(y, tx, lambda_):
     loss = compute_loss(y, tx, w)
     return w, loss
 
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
+def learning_by_gradient_descent(y, tx, w, gamma):
+    """
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
+    """
+    loss = cross_entropy_loss(y, tx, w)
+    grad = cross_entropy_gradient(y, tx, w)
+    w -= gamma * grad
+    return loss, w
 
-    return w, loss    
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
+    threshold = 1e-8
+    w = initial_w
+    loss_prev = 0
+
+    for iter in range(max_iters):
+        # get loss and update w.
+        loss, w = learning_by_gradient_descent(y, tx, w, gamma)
+        # log info
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # converge criterion
+        if iter > 1 and np.abs(loss - loss_prev) < threshold:
+            break  
+        loss_prev = loss
+
+    print("loss={l}".format(l=cross_entropy_loss(y, tx, w)))
+    return w, loss  
 
 def build_k_indices(y, k_fold):
     """build k indices for k-fold."""
