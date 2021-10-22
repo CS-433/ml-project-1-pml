@@ -228,7 +228,7 @@ def separate_dataset(tX, ids, y = None):
 
         mean = np.mean(tX_list[i], axis = 0, where = tX_list[i] != -999)
         tX_with_NaN=np.where(tX_list[i] == -999, np.nan, tX_list[i])
-        median = np.nanmedian(tX_list[i], axis = 0)
+        median = np.nanmedian(tX_with_NaN, axis = 0)
 
         tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
 
