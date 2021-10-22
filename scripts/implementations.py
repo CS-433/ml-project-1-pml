@@ -7,6 +7,11 @@ def normalize(data):
 def standardize(data):
     return (data - np.average(data)) / (np.std(data))
 
+def sigmoid(t):
+    """apply the sigmoid function on t."""
+    sigm = 1 / (1 + np.exp(-t))
+    return sigm
+
 def compute_loss(y, tx, w):
     """Calculate the loss."""
     loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
@@ -15,10 +20,21 @@ def compute_loss(y, tx, w):
     # loss = np.absolute(y - tx.dot(w)).sum()/ len(y)   #MAE
     return loss
 
+def cross_entropy_loss(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    loss = -np.sum(y.reshape((-1,1)) * np.log(sigmoid(tx @ w)) + (1-y.reshape((-1,1))) * np.log(1 - sigmoid(tx @ w)))
+    return loss
+
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
     grad = -tx.T.dot(y - tx.dot(w))/len(y)
     return grad
+
+def cross_entropy_gradient(y, tx, w):
+    """compute the gradient of cross entropy loss."""
+    grad = tx.T @ (sigmoid(tx @ w) - y.reshape((-1,1)))
+    return grad
+
 
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
@@ -70,6 +86,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
+
 def least_squares(y, tx):
     """calculate the least squares solution."""
     w = np.linalg.solve(tx.T.dot(tx), tx.T.dot(y))
@@ -84,6 +101,35 @@ def ridge_regression(y, tx, lambda_):
     # loss = ((y - tx @ w)**2).sum() * 0.5 / len(y)
     loss = compute_loss(y, tx, w)
     return w, loss
+
+def learning_by_gradient_descent(y, tx, w, gamma):
+    """
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
+    """
+    loss = cross_entropy_loss(y, tx, w)
+    grad = cross_entropy_gradient(y, tx, w)
+    w -= gamma * grad
+    return loss, w
+
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
+    threshold = 1e-8
+    w = initial_w
+    loss_prev = 0
+
+    for iter in range(max_iters):
+        # get loss and update w.
+        loss, w = learning_by_gradient_descent(y, tx, w, gamma)
+        # log info
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # converge criterion
+        if iter > 1 and np.abs(loss - loss_prev) < threshold:
+            break  
+        loss_prev = loss
+
+    print("loss={l}".format(l=cross_entropy_loss(y, tx, w)))
+    return w, loss  
 
 def build_k_indices(y, k_fold):
     """build k indices for k-fold."""
