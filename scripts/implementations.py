@@ -22,8 +22,11 @@ def compute_loss(y, tx, w):
 
 def cross_entropy_loss(y, tx, w):
     """compute the loss: negative log likelihood."""
-    loss = -np.sum(y.reshape((-1,1)) * np.log(sigmoid(tx @ w)) + (1-y.reshape((-1,1))) * np.log(1 - sigmoid(tx @ w)))
-    return loss
+    pred = sigmoid(tx.dot(w))
+    loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
+    return np.squeeze(- np.sum(loss))
+    #loss = -np.sum(y.reshape((-1,1)) * np.log(sigmoid(tx @ w)) + (1-y.reshape((-1,1))) * np.log(1 - sigmoid(tx @ w)))
+    #return loss
 
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
@@ -131,6 +134,45 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     print("loss={l}".format(l=cross_entropy_loss(y, tx, w)))
     return w, loss  
 
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient"""
+    loss = cross_entropy_loss(y, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
+    gradient = cross_entropy_gradient(y, tx, w) + 2 * lambda_ * w
+    return loss, gradient
+
+def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
+    """
+    Do one step of gradient descent, using the penalized logistic regression.
+    Return the loss and updated w.
+    """
+    loss, gradient = penalized_logistic_regression(y, tx, w, lambda_)
+    w = w - gamma * gradient
+    return loss, w
+
+
+def logistic_regression_penalized_gradient_descent(y, tx, initial_w, max_iter, gamma, lambda_):
+    # init parameters
+    threshold = 1e-8
+    losses_prev = 0
+
+    # build tx
+    w = initial_w
+
+    # start the logistic regression
+    for iter in range(max_iter):
+        # get loss and update w.
+        loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        # log info
+        #if iter % 100 == 0:
+            #print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # converge criterion
+        if iter > 1 and np.abs(loss - loss_prev) < threshold:
+            break
+        loss_prev = loss
+    return loss, w
+
+
 def build_k_indices(y, k_fold):
     """build k indices for k-fold."""
     #améliorer pour ne pas sauter qq samples ?
@@ -233,6 +275,30 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
     
     return loss_tr, loss_te, weights
 
+def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log = False):
+    """return the loss of ridge regression."""
+
+    max_iter= 700
+    
+
+    indices_te = k_indices[k]
+    indices_tr = np.delete(k_indices, k, axis=0)
+    indices_tr = np.concatenate(indices_tr, axis= None)
+    x_tr = x[indices_tr]
+    y_tr = y[indices_tr]
+    x_te = x[indices_te]
+    y_te = y[indices_te]
+    
+    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
+    initial_w = np.zeros((x_tr_poly.shape[1], 1))
+
+    weights, loss_tr = logistic_regression_penalized_gradient_descent(y_tr, x_tr_poly, initial_w, max_iter, gamma, lambda_)
+    
+
+    loss_te = cross_entropy_loss(y_te, x_te_poly, weights)
+    
+    return loss_tr, loss_te, weights
+
 
 def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-7, -2, 20)):
     # Ridge regression with K-fold
@@ -255,6 +321,35 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7),
     rmse_te = min(rmse_te_tmp)
 
     return rmse_te, BestDeg, BestLambda
+
+
+def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 4), lambdas = np.logspace(-6, -1, 4), gammas = np.logspace(-13, -11, 3)):
+
+    k_indices = build_k_indices(y, k_fold)
+
+    rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
+    for index_degree, degree in enumerate(degrees):
+        for index_gamma, gamma in enumerate(gammas):
+            for index_lambda, lambda_ in enumerate(lambdas):
+                loss_te_tmp = 0
+                for k in range(k_fold):
+                    _, loss_te, _ = cross_validation_log_len(y, tX, k_indices, k, degree, lambda_, gamma,log)
+                    loss_te_tmp = loss_te_tmp + loss_te
+                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
+            print("Done Lambda")
+        print("Done Gamma")
+    print("Done Deg")
+    rmse_te = rmse_te_tmp.min()
+    print(rmse_te_tmp.shape)
+    print(rmse_te_tmp[0,0,1])
+    Ind_best_param = np.where(rmse_te_tmp == np.amin(rmse_te_tmp))
+    print(Ind_best_param)
+    BestDeg = degrees[np.squeeze(Ind_best_param[0])]
+    BestGamma = degrees[np.squeeze(Ind_best_param[1])]
+    BestLambda = degrees[np.squeeze(Ind_best_param[2])]
+
+    return rmse_te, BestDeg, BestLambda, BestGamma
+
 
 
 def separate_dataset(tX, ids, y = None):
