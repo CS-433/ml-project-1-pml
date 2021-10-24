@@ -35,7 +35,10 @@ def compute_gradient(y, tx, w):
 
 def cross_entropy_gradient(y, tx, w):
     """compute the gradient of cross entropy loss."""
-    grad = tx.T @ (sigmoid(tx @ w) - y.reshape((-1,1)))
+    #grad = tx.T @ (sigmoid(tx @ w) - y.reshape((-1,1)))
+
+    pred = sigmoid(tx.dot(w))
+    grad = tx.T.dot(pred - y)
     return grad
 
 
@@ -161,6 +164,7 @@ def logistic_regression_penalized_gradient_descent(y, tx, initial_w, max_iter, g
 
     # start the logistic regression
     for iter in range(max_iter):
+        print("loop2")
         # get loss and update w.
         loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # log info
@@ -292,7 +296,7 @@ def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log =
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
     initial_w = np.zeros((x_tr_poly.shape[1], 1))
 
-    weights, loss_tr = logistic_regression_penalized_gradient_descent(y_tr, x_tr_poly, initial_w, max_iter, gamma, lambda_)
+    loss_tr, weights = logistic_regression_penalized_gradient_descent(y_tr, x_tr_poly, initial_w, max_iter, gamma, lambda_)
     
 
     loss_te = cross_entropy_loss(y_te, x_te_poly, weights)
@@ -323,7 +327,7 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7),
     return rmse_te, BestDeg, BestLambda
 
 
-def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 4), lambdas = np.logspace(-6, -1, 4), gammas = np.logspace(-13, -11, 3)):
+def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-7, -1, 3), gammas = np.logspace(-10, -8, 3)):
 
     k_indices = build_k_indices(y, k_fold)
 
@@ -335,14 +339,14 @@ def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 4
                 for k in range(k_fold):
                     _, loss_te, _ = cross_validation_log_len(y, tX, k_indices, k, degree, lambda_, gamma,log)
                     loss_te_tmp = loss_te_tmp + loss_te
-                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
+                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * abs(loss_te_tmp) / k_fold)
             print("Done Lambda")
         print("Done Gamma")
     print("Done Deg")
-    rmse_te = rmse_te_tmp.min()
+    rmse_te = np.nanmin(rmse_te_tmp)
     print(rmse_te_tmp.shape)
     print(rmse_te_tmp[0,0,1])
-    Ind_best_param = np.where(rmse_te_tmp == np.amin(rmse_te_tmp))
+    Ind_best_param = np.where(rmse_te_tmp == np.nanmin(rmse_te_tmp))
     print(Ind_best_param)
     BestDeg = degrees[np.squeeze(Ind_best_param[0])]
     BestGamma = degrees[np.squeeze(Ind_best_param[1])]
@@ -372,6 +376,10 @@ def separate_dataset(tX, ids, y = None):
         median = np.nanmedian(tX_with_NaN, axis = 0)
 
         tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
+
+        tX_list[i] = normalize(tX_list[i])
+        #tX_list[i] = standardize(tX_list[i])
+
 
         if y is not None:
             y_list.append(y[indices])
