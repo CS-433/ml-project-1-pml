@@ -103,9 +103,13 @@ def least_squares(y, tx):
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""
     lambda_pr = lambda_ * 2 * len(y)
-    w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
+    if np.linalg.det(tx.T @ tx + lambda_pr * np.eye(tx.shape[1])) == 0:
+        w= np.zeros((tx.shape[1], 1))
+        loss= 1000
+    else:
+        w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
     # loss = ((y - tx @ w)**2).sum() * 0.5 / len(y)
-    loss = compute_loss(y, tx, w)
+        loss = compute_loss(y, tx, w)
     return w, loss
 
 def learning_by_gradient_descent(y, tx, w, gamma):
@@ -303,7 +307,7 @@ def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log =
     return loss_tr, loss_te, weights
 
 
-def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 8), lambdas = np.logspace(-8, -1, 35)):
+def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15), lambdas = np.logspace(-8, -1, 35)):
     # Ridge regression with K-fold
     k_indices = build_k_indices(y, k_fold)
 
@@ -326,7 +330,7 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 8),
     return rmse_te, BestDeg, BestLambda
 
 
-def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-7, -1, 25), gammas = np.logspace(-11, -8, 25)):
+def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 15), lambdas = np.logspace(-7, -1, 25), gammas = np.logspace(-11, -8, 25)):
 
     k_indices = build_k_indices(y, k_fold)
 
@@ -377,7 +381,7 @@ def separate_dataset(tX, ids, y = None):
         tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
 
         tX_list[i] = normalize(tX_list[i])
-        tX_list[i] = standardize(tX_list[i])
+        #tX_list[i] = standardize(tX_list[i])
 
 
         if y is not None:
