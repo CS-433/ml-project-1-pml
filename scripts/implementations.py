@@ -35,10 +35,10 @@ def compute_gradient(y, tx, w):
 
 def cross_entropy_gradient(y, tx, w):
     """compute the gradient of cross entropy loss."""
-    #grad = tx.T @ (sigmoid(tx @ w) - y.reshape((-1,1)))
+    grad = tx.T @ (sigmoid(tx @ w) - y.reshape((-1,1)))
 
-    pred = sigmoid(tx.dot(w))
-    grad = tx.T.dot(pred - y)
+    #pred = sigmoid(tx.dot(w))
+    #grad = tx.T.dot(pred - y)
     return grad
 
 
@@ -164,7 +164,6 @@ def logistic_regression_penalized_gradient_descent(y, tx, initial_w, max_iter, g
 
     # start the logistic regression
     for iter in range(max_iter):
-        print("loop2")
         # get loss and update w.
         loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # log info
@@ -304,7 +303,7 @@ def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log =
     return loss_tr, loss_te, weights
 
 
-def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-7, -2, 20)):
+def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 10), lambdas = np.logspace(-8, -1, 35)):
     # Ridge regression with K-fold
     k_indices = build_k_indices(y, k_fold)
 
@@ -327,7 +326,7 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 7),
     return rmse_te, BestDeg, BestLambda
 
 
-def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-7, -1, 3), gammas = np.logspace(-10, -8, 3)):
+def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 7), lambdas = np.logspace(-7, -1, 25), gammas = np.logspace(-11, -8, 25)):
 
     k_indices = build_k_indices(y, k_fold)
 
@@ -378,7 +377,7 @@ def separate_dataset(tX, ids, y = None):
         tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
 
         tX_list[i] = normalize(tX_list[i])
-        #tX_list[i] = standardize(tX_list[i])
+        tX_list[i] = standardize(tX_list[i])
 
 
         if y is not None:
