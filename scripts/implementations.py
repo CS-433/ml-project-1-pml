@@ -2,10 +2,10 @@ import numpy as np
 from proj1_helpers import *
 
 def normalize(data):
-    return (data-np.min(data))/(np.max(data)-np.min(data))
+    return (data-np.min(data, axis = 0))/(np.max(data, axis = 0)-np.min(data, axis = 0))
 
 def standardize(data):
-    return (data - np.average(data)) / (np.std(data))
+    return (data - np.average(data, axis = 0)) / (np.std(data, axis = 0))
 
 def sigmoid(t):
     """apply the sigmoid function on t."""
