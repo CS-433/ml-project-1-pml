@@ -206,7 +206,7 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
 
 def logistic_regression_penalized_gradient_descent(y, tx, initial_w, max_iter, gamma, lambda_):
     # init parameters
-    threshold = 1e-8
+    threshold = 1e-5
     losses_prev = 0
 
     # build tx
@@ -217,9 +217,12 @@ def logistic_regression_penalized_gradient_descent(y, tx, initial_w, max_iter, g
         # get loss and update w.
         loss, w = learning_by_penalized_gradient(y.reshape((-1,1)), tx, w, gamma, lambda_)
         # log info
-        #if iter % 100 == 0:
-            #print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # if iter % 100 == 0:
+        #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
         # converge criterion
+        if loss < 0:
+            print('NEGATIVE LOSS')
+            break
         if iter > 1 and np.abs(loss - loss_prev) < threshold:
             break
         loss_prev = loss
@@ -347,8 +350,7 @@ def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log =
 
     loss_tr, weights = logistic_regression_penalized_gradient_descent(y_tr, x_tr_poly, initial_w, max_iter, gamma, lambda_)
     
-
-    loss_te = cross_entropy_loss(y_te, x_te_poly, weights)
+    loss_te = compute_loss_log(y_te, x_te_poly, weights)
     
     return loss_tr, loss_te, weights
 
@@ -388,18 +390,19 @@ def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 1
                 for k in range(k_fold):
                     _, loss_te, _ = cross_validation_log_len(y, tX, k_indices, k, degree, lambda_, gamma,log)
                     loss_te_tmp = loss_te_tmp + loss_te
-                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * abs(loss_te_tmp) / k_fold)
+                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
+                print(rmse_te_tmp[index_degree, index_gamma, index_lambda])
             print("Done Lambda")
         print("Done Gamma")
     print("Done Deg")
     rmse_te = np.nanmin(rmse_te_tmp)
-    print(rmse_te_tmp.shape)
-    print(rmse_te_tmp[0,0,1])
-    Ind_best_param = np.where(rmse_te_tmp == np.nanmin(rmse_te_tmp))
+    # print(rmse_te_tmp.shape)
+    # print(rmse_te_tmp[0,0,1])
+    Ind_best_param = np.where(rmse_te_tmp == rmse_te)
     print(Ind_best_param)
     BestDeg = degrees[np.squeeze(Ind_best_param[0])]
-    BestGamma = degrees[np.squeeze(Ind_best_param[1])]
-    BestLambda = degrees[np.squeeze(Ind_best_param[2])]
+    BestGamma = gammas[np.squeeze(Ind_best_param[1])]
+    BestLambda = lambdas[np.squeeze(Ind_best_param[2])]
 
     return rmse_te, BestDeg, BestLambda, BestGamma
 
@@ -431,7 +434,8 @@ def separate_dataset(tX, ids, y = None):
 
 
         if y is not None:
-            y_list.append(y[indices])
+            y_l = y[indices]
+            y_list.append(np.where(y_l == -1, 0, y_l))
     if y is not None:
         return tX_list, ids_list, y_list
     return tX_list, ids_list
@@ -448,5 +452,5 @@ def separated_train(tX_list, y_list, function, args):
 def separated_eval(weights_list, tX_test_list):
     y_pred_list = []
     for i in range(3):
-        y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
+        y_pred_list.append(predict_labels_log(weights_list[i], tX_test_list[i]))
     return y_pred_list
