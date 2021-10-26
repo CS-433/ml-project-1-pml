@@ -408,7 +408,7 @@ def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 1
 
 
 
-def separate_dataset(tX, ids, y = None):
+def separate_dataset(tX, ids, y = None, logistic = False):
     tX_list = []
     y_list = []
     ids_list = []
@@ -435,7 +435,10 @@ def separate_dataset(tX, ids, y = None):
 
         if y is not None:
             y_l = y[indices]
-            y_list.append(np.where(y_l == -1, 0, y_l))
+            if logistic:
+                y_list.append(np.where(y_l == -1, 0, y_l))
+            else:
+                y_list.append(y_l)
     if y is not None:
         return tX_list, ids_list, y_list
     return tX_list, ids_list
