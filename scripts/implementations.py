@@ -167,7 +167,7 @@ def learning_by_gradient_descent(y, tx, w, gamma):
     return loss, w
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
-    threshold = 1e-8
+    threshold = 1e-4
     w = initial_w
     loss_prev = 0
 
@@ -390,7 +390,7 @@ def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 1
                 for k in range(k_fold):
                     _, loss_te, _ = cross_validation_log_len(y, tX, k_indices, k, degree, lambda_, gamma,log)
                     loss_te_tmp = loss_te_tmp + loss_te
-                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
+                rmse_te_tmp[index_degree, index_gamma, index_lambda]= loss_te_tmp / k_fold
                 print(rmse_te_tmp[index_degree, index_gamma, index_lambda])
             print("Done Lambda")
         print("Done Gamma")
@@ -403,7 +403,6 @@ def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 1
     BestDeg = degrees[np.squeeze(Ind_best_param[0])]
     BestGamma = gammas[np.squeeze(Ind_best_param[1])]
     BestLambda = lambdas[np.squeeze(Ind_best_param[2])]
-
     return rmse_te, BestDeg, BestLambda, BestGamma
 
 
