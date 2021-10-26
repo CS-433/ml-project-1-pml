@@ -288,7 +288,7 @@ def build_poly_log(x_tr, degree, log = False, x_te = None):
 
 def build_poly_separated(x, degree, log=False):
     mat_tX = []
-    for i in range(3):
+    for i in range(6):
         mat_tX.append(build_poly(x[i], degree, log))
     return mat_tX
 
@@ -355,7 +355,7 @@ def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log =
     return loss_tr, loss_te, weights
 
 
-def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15), lambdas = np.logspace(-8, -1, 35)):
+def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 8), lambdas = np.logspace(-8, -1, 10)):
     # Ridge regression with K-fold
     k_indices = build_k_indices(y, k_fold)
 
@@ -412,22 +412,22 @@ def separate_dataset(tX, ids, y = None):
     tX_list = []
     y_list = []
     ids_list = []
-    for i in range(3):
-        if i < 2:
-            indices = np.isclose(tX[:,22], i)
+    for i in range(6):
+        if i < 4:            
+            indices = np.logical_and((np.isclose(tX[:,22], np.floor((i+0.01) / 2.0))), (tX[:,0] == -999 if i % 2 == 0 else tX[:,0] != -999))
         else:
-            indices = np.any((np.isclose(tX[:,22], i), np.isclose(tX[:,22], i+1)), axis = 0)
+            indices = np.logical_and((np.any((np.isclose(tX[:,22], np.floor((i+0.01) / 2.0)), np.isclose(tX[:,22], np.floor((i+0.01) / 2.0)+1)), axis = 0)), (tX[:,0] == -999 if i % 2 == 0 else tX[:,0] != -999))
         tX_list.append(tX[indices])
         ids_list.append(ids[indices])
 
         tX_list[i] = np.delete(tX_list[i], 22, axis=1) #Delete 22nd column
         tX_list[i] = tX_list[i][:, ~np.all(tX_list[i][1:] == tX_list[i][:-1], axis=0)] #Delete column with all the same values (so the columns of -999)
 
-        mean = np.mean(tX_list[i], axis = 0, where = tX_list[i] != -999)
-        tX_with_NaN=np.where(tX_list[i] == -999, np.nan, tX_list[i])
-        median = np.nanmedian(tX_with_NaN, axis = 0)
+        # mean = np.mean(tX_list[i], axis = 0, where = tX_list[i] != -999)
+        # tX_with_NaN=np.where(tX_list[i] == -999, np.nan, tX_list[i])
+        # median = np.nanmedian(tX_with_NaN, axis = 0)
 
-        tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
+        # tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
 
         #tX_list[i] = normalize(tX_list[i])
         tX_list[i] = standardize(tX_list[i])
@@ -443,14 +443,17 @@ def separate_dataset(tX, ids, y = None):
 def separated_train(tX_list, y_list, function, args):
     weights = []
     loss = []
-    for i in range(3):
+    for i in range(6):
         w, l = function(y_list[i], tX_list[i], args)
         weights.append(w)
         loss.append(l)
     return weights, loss
 
-def separated_eval(weights_list, tX_test_list):
+def separated_eval(weights_list, tX_test_list, logistic = False):
     y_pred_list = []
-    for i in range(3):
-        y_pred_list.append(predict_labels_log(weights_list[i], tX_test_list[i]))
+    for i in range(6):
+        if logistic:
+            y_pred_list.append(predict_labels_log(weights_list[i], tX_test_list[i]))
+        else:
+            y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
     return y_pred_list
