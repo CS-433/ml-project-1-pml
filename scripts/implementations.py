@@ -133,7 +133,7 @@ def ridge_regression(y, tx, lambda_):
 
 
 
-##################### LOGISTIC REGRESSION
+##################### LOGISTIC REGRESSION  #####################
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     threshold = 1e-4
@@ -206,7 +206,6 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15)
                     _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), log)
                     loss_te_tmp = loss_te_tmp + loss_te
                 rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
-    print("Done Deg")
     rmse_te = np.nanmin(rmse_te_tmp)
     Ind_best_param = np.where(rmse_te_tmp == rmse_te)
     BestDeg = degrees[np.squeeze(Ind_best_param[0])]
