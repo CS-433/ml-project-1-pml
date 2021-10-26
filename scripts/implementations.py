@@ -334,7 +334,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
 def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log = False):
     """return the loss of ridge regression."""
 
-    max_iter= 700
+    max_iter= 100
     
 
     indices_te = k_indices[k]
