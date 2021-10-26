@@ -2,14 +2,7 @@ import numpy as np
 from proj1_helpers import *
 from helpers_data import *
 
-#####################
-def normalize(data):
-    return (data-np.min(data, axis = 0))/(np.max(data, axis = 0)-np.min(data, axis = 0))
 
-def standardize(data):
-    return (data - np.average(data, axis = 0)) / (np.std(data, axis = 0))
-
-#####################
 
 ##################### LOSSES
 def compute_loss(y, tx, w):
@@ -194,7 +187,6 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iter, gamma):
     return loss, w
 
 
-
 def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 8), lambdas = np.logspace(-8, -1, 10)):
     # Ridge regression with K-fold
     k_indices = build_k_indices(y, k_fold)
@@ -245,3 +237,57 @@ def grid_search_for_log_reg(y, tX, log = False, k_fold = 4, degrees = range(1, 1
     BestLambda = lambdas[np.squeeze(Ind_best_param[2])]
     return rmse_te, BestDeg, BestLambda, BestGamma
 
+
+def cross_validation(y, x, k_indices, k, degree, function, args = None, log = False):
+    """return the loss of ridge regression."""
+
+    indices_te = k_indices[k]
+    indices_tr = np.delete(k_indices, k, axis=0)
+    indices_tr = np.concatenate(indices_tr, axis= None)
+    x_tr = x[indices_tr]
+    y_tr = y[indices_tr]
+    x_te = x[indices_te]
+    y_te = y[indices_te]
+    
+    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
+    if (function == ridge_regression):
+        weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
+    elif (function == least_squares):
+        weights, loss_tr = least_squares(y_tr, x_tr_poly)
+
+    loss_te = compute_loss(y_te, x_te_poly, weights)
+    
+    return loss_tr, loss_te, weights
+
+def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log = False):
+    """return the loss of ridge regression."""
+
+    max_iter= 100
+    
+
+    indices_te = k_indices[k]
+    indices_tr = np.delete(k_indices, k, axis=0)
+    indices_tr = np.concatenate(indices_tr, axis= None)
+    x_tr = x[indices_tr]
+    y_tr = y[indices_tr]
+    x_te = x[indices_te]
+    y_te = y[indices_te]
+    
+    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
+    initial_w = np.zeros((x_tr_poly.shape[1], 1))
+
+    loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, gamma, lambda_)
+    
+    loss_te = compute_loss_log(y_te, x_te_poly, weights)
+    
+    return loss_tr, loss_te, weights
+
+
+def separated_eval(weights_list, tX_test_list, logistic = False):
+    y_pred_list = []
+    for i in range(6):
+        if logistic:
+            y_pred_list.append(predict_labels_log(weights_list[i], tX_test_list[i]))
+        else:
+            y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
+    return y_pred_list
