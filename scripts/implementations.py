@@ -185,6 +185,7 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
             print('NEGATIVE LOSS')
             break
         if iter > 1 and np.abs(loss - loss_prev) < threshold:
+            print('treshold')
             break
         loss_prev = loss
     return loss, w

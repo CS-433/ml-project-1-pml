@@ -30,7 +30,7 @@ def separate_dataset(tX, ids, y = None, logistic = False):
 
         # tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
 
-        #tX_list[i] = normalize(tX_list[i])
+        tX_list[i] = normalize(tX_list[i])
         #tX_list[i] = standardize(tX_list[i])
 
 
