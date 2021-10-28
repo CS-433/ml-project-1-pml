@@ -194,7 +194,7 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
 ##################### GRID SEARCH #####################
 
 
-def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1)):
+def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1), dataset = 0):
 
     k_indices = build_k_indices(y, k_fold)
     rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
@@ -204,7 +204,7 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15)
             for index_lambda, lambda_ in enumerate(lambdas):
                 loss_te_tmp = 0
                 for k in range(k_fold):
-                    _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), log)
+                    _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), dataset)
                     loss_te_tmp = loss_te_tmp + loss_te
                 rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
     rmse_te = np.nanmin(rmse_te_tmp)
@@ -217,7 +217,7 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15)
 
 ##################### CROSS VALIDATION #####################
 
-def cross_validation(y, x, k_indices, k, degree, function, args = None, log = False):
+def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset = 0):
     """return the loss of ridge regression."""
 
     indices_te = k_indices[k]
@@ -228,11 +228,14 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
     x_te = x[indices_te]
     y_te = y[indices_te]
     
-    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
-
+    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
+    # loss_tr = 1000
+    # loss_te = 1000
+    # weights = 1
     if (function == ridge_regression):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         loss_te = compute_loss(y_te, x_te_poly, weights)
+        compute_score(y_te, x_te_poly, weights)
     elif (function == least_squares):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         loss_te = compute_loss(y_te, x_te_poly, weights)
@@ -241,7 +244,8 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         loss_te = compute_loss_log(y_te, x_te_poly, weights)
-    
+    else:
+        print('error function name')
     return loss_tr, loss_te, weights
 
 
