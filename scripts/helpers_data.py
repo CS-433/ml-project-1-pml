@@ -14,8 +14,6 @@ def standardize(data, m = None, s = None):
         data = (data - m) / s
         return data
 
-
-
 def clean_data(tX_list, tX_test_list, y_list):
 
     alpha = 0.98
