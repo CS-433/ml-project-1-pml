@@ -162,7 +162,11 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
     # init parameters
+<<<<<<< HEAD
     threshold = 1e-6
+=======
+    threshold = 1e-7
+>>>>>>> ed30ea24710e0f0da9e310a350af11a6bb76f401
     loss_prev = 0
 
     # build tx
@@ -176,8 +180,8 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
         w = w - gamma * gradient
         
         # log info
-        # if iter % 100 == 0:
-        #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
         # converge criterion
         if loss < 0:

@@ -30,7 +30,7 @@ def separate_dataset(tX, ids, y = None, logistic = False):
 
         # tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
 
-        tX_list[i] = normalize(tX_list[i])
+        #tX_list[i] = normalize(tX_list[i])
         #tX_list[i] = standardize(tX_list[i])
 
 
@@ -77,6 +77,10 @@ def build_poly_log(x_tr, degree, log = False, x_te = None):
                 log_te = np.c_[log_te, np.log(x_te[:,i])]
         poly_tr = np.c_[poly_tr, log_tr[:,1:]]
         poly_te = np.c_[poly_te, log_te[:,1:]]
+
+    poly_tr[:,1:] = standardize(poly_tr[:,1:])
+    poly_te[:,1:] = standardize(poly_te[:,1:])
+    
     return poly_tr, poly_te
 
 
