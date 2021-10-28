@@ -1,5 +1,5 @@
 import numpy as np
-from scripts.proj1_helpers import predict_labels
+from proj1_helpers import predict_labels
 
 #####################
 def normalize(data):
@@ -17,19 +17,22 @@ def standardize(data, m = None, s = None):
 
 def compute_score(y, x, weights):
     y_pred = predict_labels(weights, x)
-    print(y_pred.shape)
-    print(y.shape)
+    score = (y == y_pred).sum()
+    return score
 
 
-def clean_data(tX_list, tX_test_list):
+def clean_data(tX_list, tX_test_list, y_list):
 
-    # alpha = 0.005
-    # for i in range(6):
-    #     a = np.quantile(tX_list[i], alpha/2, axis = 0)
-    #     b = np.quantile(tX_list[i], 1-(alpha/2), axis = 0)
-    #     tX_list[i] = np.where(np.logical_or(tX_list[i] < a, tX_list[i] > b), np.nan, tX_list[i])
-    #     tX_list[i] = tX_list[i][~np.isnan(tX_list[i]).any(axis=1)]
-    
+    alpha = 0.98
+    for i in range(6):
+        dist_fr_mean = np.std(tX_list[i], axis = 0)/(np.sqrt(1-alpha))
+        mean = np.average(tX_list[i], axis = 0)
+
+        tX_list[i] = np.where(np.abs(tX_list[i]-mean) > dist_fr_mean, np.nan,tX_list[i])
+        y_list[i] = y_list[i][~np.isnan(tX_list[i]).any(axis=1)]
+        tX_list[i] = tX_list[i][~np.isnan(tX_list[i]).any(axis=1)]
+        
+
     tX_list[0]=np.delete(tX_list[0], [2,4,7,10,13,15], axis=1)
     tX_list[1]=np.delete(tX_list[1], [3,5,11,14,16,17], axis=1)
     tX_list[2]=np.delete(tX_list[2], [7,9,10,12,13,15,16,17,19], axis=1)
@@ -62,7 +65,7 @@ def clean_data(tX_list, tX_test_list):
         tX_list[i], mean, std = standardize(tX_list[i])
         tX_test_list[i] = standardize(tX_test_list[i], mean, std)
 
-    return tX_list, tX_test_list
+    return tX_list, tX_test_list, y_list
 #####################
 
 def separate_dataset(tX, ids, y = None, logistic = False):

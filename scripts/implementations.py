@@ -206,12 +206,13 @@ def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = n
                 for k in range(k_fold):
                     _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), dataset)
                     loss_te_tmp = loss_te_tmp + loss_te
-                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
-    rmse_te = np.nanmin(rmse_te_tmp)
+                rmse_te_tmp[index_degree, index_gamma, index_lambda]= loss_te_tmp / k_fold
+    rmse_te = np.nanmax(rmse_te_tmp)
     Ind_best_param = np.where(rmse_te_tmp == rmse_te)
-    BestDeg = degrees[np.squeeze(Ind_best_param[0])]
-    BestGamma = gammas[np.squeeze(Ind_best_param[1])]
-    BestLambda = lambdas[np.squeeze(Ind_best_param[2])]
+    print(Ind_best_param)
+    BestDeg = degrees[np.squeeze(Ind_best_param[0][0])]
+    BestGamma = gammas[np.squeeze(Ind_best_param[1][0])]
+    BestLambda = lambdas[np.squeeze(Ind_best_param[2][0])]
     return rmse_te, BestDeg, BestLambda, BestGamma
 
 
@@ -228,14 +229,15 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     x_te = x[indices_te]
     y_te = y[indices_te]
     
+
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
     # loss_tr = 1000
     # loss_te = 1000
     # weights = 1
-    if (function == ridge_regression):
+    if (True):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         loss_te = compute_loss(y_te, x_te_poly, weights)
-        compute_score(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights)
     elif (function == least_squares):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         loss_te = compute_loss(y_te, x_te_poly, weights)
@@ -246,7 +248,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
         loss_te = compute_loss_log(y_te, x_te_poly, weights)
     else:
         print('error function name')
-    return loss_tr, loss_te, weights
+    return loss_tr, score, weights
 
 
 
