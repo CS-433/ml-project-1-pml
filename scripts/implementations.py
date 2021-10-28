@@ -123,12 +123,12 @@ def least_squares(y, tx):
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""
     lambda_pr = lambda_ * 2 * len(y)
-    # if np.linalg.det(tx.T @ tx + lambda_pr * np.eye(tx.shape[1])) == 0:
-    #     w= np.zeros((tx.shape[1], 1))
-    #     loss= 1000
-    # else:
-    w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
-    loss = compute_loss(y, tx, w)
+    if np.linalg.det(tx.T @ tx + lambda_pr * np.eye(tx.shape[1])) == 0:
+        w= np.zeros((tx.shape[1], 1))
+        loss= 1000
+    else:
+        w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
+        loss = compute_loss(y, tx, w)
     return w, loss
 
 
@@ -162,13 +162,12 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
     # init parameters
-    threshold = 1e-5
+    threshold = 1e-6
     loss_prev = 0
 
     # build tx
     w = initial_w
     y = y.reshape((-1,1))
-
     # start the logistic regression
     for iter in range(max_iter):
         # get loss and update w.
@@ -237,7 +236,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         loss_te = compute_loss(y_te, x_te_poly, weights)
     elif (function == reg_logistic_regression):
-        max_iter= 1000
+        max_iter= 5000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         loss_te = compute_loss_log(y_te, x_te_poly, weights)
