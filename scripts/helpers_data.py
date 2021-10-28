@@ -1,5 +1,4 @@
 import numpy as np
-from proj1_helpers import predict_labels
 
 #####################
 def normalize(data):
@@ -15,10 +14,6 @@ def standardize(data, m = None, s = None):
         data = (data - m) / s
         return data
 
-def compute_score(y, x, weights):
-    y_pred = predict_labels(weights, x)
-    score = (y == y_pred).sum()
-    return score
 
 
 def clean_data(tX_list, tX_test_list, y_list):

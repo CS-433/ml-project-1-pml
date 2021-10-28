@@ -177,15 +177,15 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
         w = w - gamma * gradient
         
         # log info
-        if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # if iter % 100 == 0:
+        #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
         # converge criterion
         if loss < 0:
             print('NEGATIVE LOSS')
             break
         if iter > 1 and np.abs(loss - loss_prev) < threshold:
-            print('treshold')
+            # print('treshold')
             break
         loss_prev = loss
     return loss, w
@@ -209,7 +209,6 @@ def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = n
                 rmse_te_tmp[index_degree, index_gamma, index_lambda]= loss_te_tmp / k_fold
     rmse_te = np.nanmax(rmse_te_tmp)
     Ind_best_param = np.where(rmse_te_tmp == rmse_te)
-    print(Ind_best_param)
     BestDeg = degrees[np.squeeze(Ind_best_param[0][0])]
     BestGamma = gammas[np.squeeze(Ind_best_param[1][0])]
     BestLambda = lambdas[np.squeeze(Ind_best_param[2][0])]
@@ -229,23 +228,21 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     x_te = x[indices_te]
     y_te = y[indices_te]
     
-
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
-    # loss_tr = 1000
-    # loss_te = 1000
-    # weights = 1
-    if (True):
+  
+    if (function == ridge_regression):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
-        loss_te = compute_loss(y_te, x_te_poly, weights)
+        #loss_te = compute_loss(y_te, x_te_poly, weights)
         score = compute_score(y_te, x_te_poly, weights)
     elif (function == least_squares):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         loss_te = compute_loss(y_te, x_te_poly, weights)
-    elif (function == reg_logistic_regression):
-        max_iter= 1000
+    elif (True):
+        max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
-        loss_te = compute_loss_log(y_te, x_te_poly, weights)
+        #loss_te = compute_loss_log(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights, True)
     else:
         print('error function name')
     return loss_tr, score, weights
