@@ -16,7 +16,7 @@ def standardize(data, m = None, s = None):
 
 def clean_data(tX_list, tX_test_list, y_list):
 
-    alpha = 0.98
+    alpha = 0.97
     for i in range(6):
         dist_fr_mean = np.std(tX_list[i], axis = 0)/(np.sqrt(1-alpha))
         mean = np.average(tX_list[i], axis = 0)

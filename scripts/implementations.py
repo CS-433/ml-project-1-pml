@@ -162,11 +162,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
     # init parameters
-<<<<<<< HEAD
-    threshold = 1e-6
-=======
     threshold = 1e-7
->>>>>>> ed30ea24710e0f0da9e310a350af11a6bb76f401
     loss_prev = 0
 
     # build tx
@@ -240,13 +236,8 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     elif (function == least_squares):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         loss_te = compute_loss(y_te, x_te_poly, weights)
-<<<<<<< HEAD
-    elif (function == reg_logistic_regression):
-        max_iter= 5000
-=======
     elif (True):
         max_iter= 3000
->>>>>>> 53b9327c9e08caa0d5e1049244a95c02d83b9a8e
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
