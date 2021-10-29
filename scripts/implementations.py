@@ -89,12 +89,21 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     w = initial_w
+    loss_prev = 0
+    threshold = 1e-8
+
     for n_iter in range(max_iters):
         gradient = compute_gradient(y, tx, w)
         loss = compute_loss(y, tx, w)
         w = w - (gamma * gradient)
-        print("Gradient Descent({bi}/{ti}): loss={l}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss))
+        # if n_iter % 100 == 0:
+            # print("Current iteration={i}, loss={l}".format(i=n_iter, l=loss))
+        if n_iter > 1 and np.abs(loss - loss_prev) < threshold:
+            break
+        if loss == np.inf or loss == np.nan:
+            print('loss error')
+            break
+        loss_prev = loss
     return w, loss
 
 
@@ -229,15 +238,22 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     y_te = y[indices_te]
     
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
-  
+
     if (function == ridge_regression):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         #loss_te = compute_loss(y_te, x_te_poly, weights)
         score = compute_score(y_te, x_te_poly, weights)
     elif (function == least_squares):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
-        loss_te = compute_loss(y_te, x_te_poly, weights)
+        #loss_te = compute_loss(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights, True)
     elif (True):
+        max_iter= 300
+        initial_w = np.zeros(x_tr_poly.shape[1])
+        weights, loss_tr = least_squares_GD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
+        score = compute_score(y_te, x_te_poly, weights, True)
+    elif True:
+    #elif (function == reg_logistic_regression):
         max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
