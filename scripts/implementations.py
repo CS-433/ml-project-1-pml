@@ -157,7 +157,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         loss_prev = loss
 
     print("loss={l}".format(l=compute_loss_log(y, tx, w)))
-    return w, loss  
+    return w, loss 
 
 
 def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
@@ -188,7 +188,7 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
             # print('treshold')
             break
         loss_prev = loss
-    return loss, w
+    return w, loss
 
 
 ##################### GRID SEARCH #####################
@@ -240,7 +240,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     elif (True):
         max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
-        loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
+        weights, loss_tr = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
         score = compute_score(y_te, x_te_poly, weights, True)
     else:
