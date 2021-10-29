@@ -180,15 +180,15 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
         w = w - gamma * gradient
         
         # log info
-        if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # if iter % 100 == 0:
+        #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
         # converge criterion
         if loss < 0:
             print('NEGATIVE LOSS')
             break
         if iter > 1 and np.abs(loss - loss_prev) < threshold:
-            print('treshold')
+            # print('treshold')
             break
         loss_prev = loss
     return loss, w
@@ -197,7 +197,7 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
 ##################### GRID SEARCH #####################
 
 
-def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1)):
+def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1), dataset = 0):
 
     k_indices = build_k_indices(y, k_fold)
     rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
@@ -207,20 +207,20 @@ def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 15)
             for index_lambda, lambda_ in enumerate(lambdas):
                 loss_te_tmp = 0
                 for k in range(k_fold):
-                    _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), log)
+                    _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), dataset)
                     loss_te_tmp = loss_te_tmp + loss_te
-                rmse_te_tmp[index_degree, index_gamma, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
-    rmse_te = np.nanmin(rmse_te_tmp)
+                rmse_te_tmp[index_degree, index_gamma, index_lambda]= loss_te_tmp / k_fold
+    rmse_te = np.nanmax(rmse_te_tmp)
     Ind_best_param = np.where(rmse_te_tmp == rmse_te)
-    BestDeg = degrees[np.squeeze(Ind_best_param[0])]
-    BestGamma = gammas[np.squeeze(Ind_best_param[1])]
-    BestLambda = lambdas[np.squeeze(Ind_best_param[2])]
+    BestDeg = degrees[np.squeeze(Ind_best_param[0][0])]
+    BestGamma = gammas[np.squeeze(Ind_best_param[1][0])]
+    BestLambda = lambdas[np.squeeze(Ind_best_param[2][0])]
     return rmse_te, BestDeg, BestLambda, BestGamma
 
 
 ##################### CROSS VALIDATION #####################
 
-def cross_validation(y, x, k_indices, k, degree, function, args = None, log = False):
+def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset = 0):
     """return the loss of ridge regression."""
 
     indices_te = k_indices[k]
@@ -231,21 +231,29 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, log = Fa
     x_te = x[indices_te]
     y_te = y[indices_te]
     
-    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
-
+    x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
+  
     if (function == ridge_regression):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
-        loss_te = compute_loss(y_te, x_te_poly, weights)
+        #loss_te = compute_loss(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights)
     elif (function == least_squares):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         loss_te = compute_loss(y_te, x_te_poly, weights)
+<<<<<<< HEAD
     elif (function == reg_logistic_regression):
         max_iter= 5000
+=======
+    elif (True):
+        max_iter= 3000
+>>>>>>> 53b9327c9e08caa0d5e1049244a95c02d83b9a8e
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
-        loss_te = compute_loss_log(y_te, x_te_poly, weights)
-    
-    return loss_tr, loss_te, weights
+        #loss_te = compute_loss_log(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights, True)
+    else:
+        print('error function name')
+    return loss_tr, score, weights
 
 
 

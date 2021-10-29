@@ -40,6 +40,16 @@ def predict_labels_log(weights, data):
     
     return y_pred
 
+def compute_score(y, x, weights, logistic = False):
+    if logistic:
+        y_pred = predict_labels_log(weights, x)
+        y_pred = np.squeeze(y_pred)
+        y_pred = np.where(y_pred == -1, 0, y_pred)
+    else:
+        y_pred = predict_labels(weights, x)
+    
+    score = (y == y_pred).sum()
+    return score
 
 def create_csv_submission(ids, y_pred, name):
     """
