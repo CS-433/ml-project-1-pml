@@ -136,6 +136,8 @@ def ridge_regression(y, tx, lambda_):
 ##################### LOGISTIC REGRESSION  #####################
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
+    """implement logistic regression."""
+    # init parameters
     threshold = 1e-4
     w = initial_w
     loss_prev = 0
@@ -161,6 +163,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 
 def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
+    """implement regularized logistic regression."""
     # init parameters
     threshold = 1e-7
     loss_prev = 0
@@ -184,7 +187,6 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
             print('NEGATIVE LOSS')
             break
         if iter > 1 and np.abs(loss - loss_prev) < threshold:
-            # print('treshold')
             break
         loss_prev = loss
     return w, loss
@@ -194,7 +196,7 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
 
 
 def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1), dataset = 0):
-
+    """Find the best hyper parameter for a given model using k-fold cross validation."""
     k_indices = build_k_indices(y, k_fold)
     rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
 
