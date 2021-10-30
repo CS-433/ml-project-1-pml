@@ -61,12 +61,15 @@ for i in range(6):
         w, l = least_squares(y_list[i], mat_tX)
 
     elif (function == 4):
+        degree_vec = [11, 15, 7, 14, 8, 13]
+        lambda_vec = [7.196856730011529e-08, 1e-10, 1e-10, 0.001389495494373139, 0.0002682695795279727, 1e-10]
         mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         w, l = ridge_regression(y_list[i], mat_tX, lambda_vec[i])
 
     elif (function == 6):
-        degree_vec = [11, 15, 7, 14, 8, 13]
-        lambda_vec = [7.196856730011529e-08, 1e-10, 1e-10, 0.001389495494373139, 0.0002682695795279727, 1e-10]
+        degree_vec = [2, 3, 2, 4, 2, 3]
+        lambda_vec = [1e-08, 5.62341325190349e-07, 1e-08, 3.1622776601683795e-05, 0.0017782794100389228, 5.62341325190349e-07]
+        gamma_vec = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
         max_iters = 3000
         initial_w = np.zeros((mat_tX.shape[1],1))
 
@@ -81,7 +84,7 @@ for i in range(6):
     mat_tX_test_list.append(mat_tX_test)    
 
 
-### MODEL EVALUATION AND 
+### MODEL EVALUATION ###s
 
 y_pred_list = separated_eval(weights_list, mat_tX_test_list) 
 
