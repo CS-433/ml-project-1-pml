@@ -29,6 +29,7 @@ tX_list, tX_test_list, y_list = clean_data(tX_list, tX_test_list, y_list)
 function = 4
 
 
+### TRAINING ###
 weights_list = []
 loss_list = []
 mat_tX_test_list = []
@@ -36,11 +37,11 @@ mat_tX_test_list = []
 for i in range(6):
     ###########
     # For each method, we create the degree, lambda and gamma vectors that allowed us to get the best score
-    # We set the initial weights and max number of iterations for GD methods
+    # For GD methods, we set the initial weights and max number of iterations
     # We perform polynomial expansion using build_poly_log with the best degree
     # We train the model (using the best hyper parameters), this gives us the weights that will be used for inference
     ###########
-    
+
     if (function == 1):
         degree_vec = [2, 2, 1, 2, 2, 2]
         gamma_vec = [0.046415888336127774, 0.046415888336127774, 0.046415888336127774, 0.046415888336127774, 0.046415888336127774, 0.046415888336127774]
@@ -90,9 +91,10 @@ for i in range(6):
 
 
 ### INFERENCE ###
-
 y_pred_list = separated_eval(weights_list, mat_tX_test_list) 
 
+
+### CONCATENATION OF THE RESULTS AND SUBMISSION FILE CREATION ###
 y_pred = np.concatenate((y_pred_list[0], y_pred_list[1], y_pred_list[2], y_pred_list[3], y_pred_list[4], y_pred_list[5]))
 ids_test_sub = np.concatenate((ids_test_list[0], ids_test_list[1], ids_test_list[2], ids_test_list[3], ids_test_list[4], ids_test_list[5]))
 
