@@ -219,7 +219,7 @@ def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = n
 ##################### CROSS VALIDATION #####################
 
 def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset = 0):
-    """return the loss of ridge regression."""
+    """Return the score of a model on training sample to cross-validate hyper parameters."""
 
     indices_te = k_indices[k]
     indices_tr = np.delete(k_indices, k, axis=0)
