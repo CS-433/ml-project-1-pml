@@ -89,17 +89,25 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     w = initial_w
+    loss_prev = 0
+    threshold = 1e-8
+
     for n_iter in range(max_iters):
         gradient = compute_gradient(y, tx, w)
         loss = compute_loss(y, tx, w)
         w = w - (gamma * gradient)
-        print("Gradient Descent({bi}/{ti}): loss={l}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss))
+        # if n_iter % 100 == 0:
+            # print("Current iteration={i}, loss={l}".format(i=n_iter, l=loss))
+        if n_iter > 1 and np.abs(loss - loss_prev) < threshold:
+            break
+        if loss == np.inf or loss == np.nan:
+            print('loss error')
+            break
+        loss_prev = loss
     return w, loss
 
 
-def least_squares_SGD(
-        y, tx, initial_w, max_iters, gamma):
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """Stochastic gradient descent algorithm."""
     batch_size = 1
     w = initial_w
@@ -108,8 +116,8 @@ def least_squares_SGD(
             gradient = compute_gradient(minibatch_y, minibatch_tx, w)
             loss = compute_loss(minibatch_y, minibatch_tx, w)
             w = w - (gamma * gradient)
-        print("Gradient Descent({bi}/{ti}): loss={l}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss))
+        # print("Gradient Descent({bi}/{ti}): loss={l}".format(
+        #       bi=n_iter, ti=max_iters - 1, l=loss))
     return w, loss
 
 
@@ -137,7 +145,10 @@ def ridge_regression(y, tx, lambda_):
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     """implement logistic regression."""
+<<<<<<< HEAD
     # init parameters
+=======
+>>>>>>> 85c9c7b61ed43dc343b0ccda7dc7853ee7ed5f31
     threshold = 1e-4
     w = initial_w
     loss_prev = 0
@@ -197,6 +208,10 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
 
 def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1), dataset = 0):
     """Find the best hyper parameter for a given model using k-fold cross validation."""
+<<<<<<< HEAD
+=======
+
+>>>>>>> 85c9c7b61ed43dc343b0ccda7dc7853ee7ed5f31
     k_indices = build_k_indices(y, k_fold)
     rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
 
@@ -230,22 +245,39 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     y_te = y[indices_te]
     
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
-  
-    if (function == ridge_regression):
+
+    if (function == 1):
+        max_iter= 300
+        initial_w = np.zeros(x_tr_poly.shape[1])
+        weights, loss_tr = least_squares_GD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
+        score = compute_score(y_te, x_te_poly, weights, True)
+
+    if (function == 2):
+        max_iter= 1000
+        initial_w = np.zeros(x_tr_poly.shape[1])
+        weights, loss_tr = least_squares_SGD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
+        score = compute_score(y_te, x_te_poly, weights, True)
+
+    elif (function == 3):
+        weights, loss_tr = least_squares(y_tr, x_tr_poly)
+        #loss_te = compute_loss(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights, True)
+
+    elif (function == 4):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         #loss_te = compute_loss(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights)
-    elif (function == least_squares):
-        weights, loss_tr = least_squares(y_tr, x_tr_poly)
-        loss_te = compute_loss(y_te, x_te_poly, weights)
-    elif (True):
+        score = compute_score(y_te, x_te_poly, weights, True)
+
+    elif (function == 6):
         max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         weights, loss_tr = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
         score = compute_score(y_te, x_te_poly, weights, True)
+
     else:
         print('error function name')
+
     return loss_tr, score, weights
 
 

@@ -101,22 +101,9 @@ def separate_dataset(tX, ids, y = None, logistic = False):
         tX_list[i] = np.delete(tX_list[i], 22, axis=1) #Delete 22nd column
         tX_list[i] = tX_list[i][:, ~np.all(tX_list[i][1:] == tX_list[i][:-1], axis=0)] #Delete column with all the same values (so the columns of -999)
 
-        # mean = np.mean(tX_list[i], axis = 0, where = tX_list[i] != -999)
-        # tX_with_NaN=np.where(tX_list[i] == -999, np.nan, tX_list[i])
-        # median = np.nanmedian(tX_with_NaN, axis = 0)
-
-        # tX_list[i] = np.where(tX_list[i] == -999, median, tX_list[i])
-
-        #tX_list[i] = normalize(tX_list[i])
-        #tX_list[i] = standardize(tX_list[i])
-
-
         if y is not None:
             y_l = y[indices]
-            if logistic:
-                y_list.append(np.where(y_l == -1, 0, y_l))
-            else:
-                y_list.append(y_l)
+            y_list.append(np.where(y_l == -1, 0, y_l))
     if y is not None:
         return tX_list, ids_list, y_list
     return tX_list, ids_list
