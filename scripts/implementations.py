@@ -239,28 +239,32 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
 
-    if (function == ridge_regression):
-        weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
-        #loss_te = compute_loss(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights)
-    elif (function == least_squares):
-        weights, loss_tr = least_squares(y_tr, x_tr_poly)
-        #loss_te = compute_loss(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights, True)
-    elif (True):
+    if (function == 1):
         max_iter= 300
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_GD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
         score = compute_score(y_te, x_te_poly, weights, True)
-    elif True:
-    #elif (function == reg_logistic_regression):
+
+    elif (function == 3):
+        weights, loss_tr = least_squares(y_tr, x_tr_poly)
+        #loss_te = compute_loss(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights, True)
+
+    elif (function == 4):
+        weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
+        #loss_te = compute_loss(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights, True)
+
+    elif (function == 6):
         max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         weights, loss_tr = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
         score = compute_score(y_te, x_te_poly, weights, True)
+
     else:
         print('error function name')
+        
     return loss_tr, score, weights
 
 
