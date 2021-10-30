@@ -107,8 +107,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     return w, loss
 
 
-def least_squares_SGD(
-        y, tx, initial_w, max_iters, gamma):
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """Stochastic gradient descent algorithm."""
     batch_size = 1
     w = initial_w
@@ -117,8 +116,8 @@ def least_squares_SGD(
             gradient = compute_gradient(minibatch_y, minibatch_tx, w)
             loss = compute_loss(minibatch_y, minibatch_tx, w)
             w = w - (gamma * gradient)
-        print("Gradient Descent({bi}/{ti}): loss={l}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss))
+        # print("Gradient Descent({bi}/{ti}): loss={l}".format(
+        #       bi=n_iter, ti=max_iters - 1, l=loss))
     return w, loss
 
 
@@ -145,6 +144,7 @@ def ridge_regression(y, tx, lambda_):
 ##################### LOGISTIC REGRESSION  #####################
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
+    """implement logistic regression."""
     threshold = 1e-4
     w = initial_w
     loss_prev = 0
@@ -170,6 +170,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 
 def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
+    """implement regularized logistic regression."""
     # init parameters
     threshold = 1e-7
     loss_prev = 0
@@ -204,6 +205,7 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
 
 
 def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1), dataset = 0):
+    """Find the best hyper parameter for a given model using k-fold cross validation."""
 
     k_indices = build_k_indices(y, k_fold)
     rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
@@ -227,7 +229,7 @@ def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = n
 ##################### CROSS VALIDATION #####################
 
 def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset = 0):
-    """return the loss of ridge regression."""
+    """Return the score of a model on training sample to cross-validate hyper parameters."""
 
     indices_te = k_indices[k]
     indices_tr = np.delete(k_indices, k, axis=0)
@@ -243,6 +245,12 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
         max_iter= 300
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_GD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
+        score = compute_score(y_te, x_te_poly, weights, True)
+
+    if (function == 2):
+        max_iter= 1000
+        initial_w = np.zeros(x_tr_poly.shape[1])
+        weights, loss_tr = least_squares_SGD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
         score = compute_score(y_te, x_te_poly, weights, True)
 
     elif (function == 3):
@@ -264,7 +272,7 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
 
     else:
         print('error function name')
-        
+
     return loss_tr, score, weights
 
 
