@@ -208,22 +208,22 @@ def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = n
     """Find the best hyper parameter for a given model using k-fold cross validation."""
 
     k_indices = build_k_indices(y, k_fold)
-    rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
+    score_grid = np.empty((len(degrees), len(gammas),len(lambdas)))
 
     for index_degree, degree in enumerate(degrees):
         for index_gamma, gamma in enumerate(gammas):
             for index_lambda, lambda_ in enumerate(lambdas):
-                loss_te_tmp = 0
+                score_tmp = 0
                 for k in range(k_fold):
-                    _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), dataset)
-                    loss_te_tmp = loss_te_tmp + loss_te
-                rmse_te_tmp[index_degree, index_gamma, index_lambda]= loss_te_tmp / k_fold
-    rmse_te = np.nanmax(rmse_te_tmp)
-    Ind_best_param = np.where(rmse_te_tmp == rmse_te)
+                    _, score_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), dataset)
+                    score_tmp = score_tmp + score_te
+                score_grid[index_degree, index_gamma, index_lambda]= score_tmp / k_fold
+    best_score = np.nanmax(score_grid)
+    Ind_best_param = np.where(score_grid == best_score)
     BestDeg = degrees[np.squeeze(Ind_best_param[0][0])]
     BestGamma = gammas[np.squeeze(Ind_best_param[1][0])]
     BestLambda = lambdas[np.squeeze(Ind_best_param[2][0])]
-    return rmse_te, BestDeg, BestLambda, BestGamma
+    return best_score, BestDeg, BestLambda, BestGamma
 
 
 ##################### CROSS VALIDATION #####################
@@ -245,30 +245,30 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
         max_iter= 300
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_GD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     if (function == 2):
         max_iter= 1000
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_SGD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     elif (function == 3):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         #loss_te = compute_loss(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     elif (function == 4):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         #loss_te = compute_loss(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     elif (function == 6):
         max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         weights, loss_tr = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     else:
         print('error function name')
@@ -280,13 +280,11 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
 ##################### EVAL #####################
 
 
-def separated_eval(weights_list, tX_test_list, logistic = False):
+def separated_eval(weights_list, tX_test_list):
     y_pred_list = []
     for i in range(6):
-        if logistic:
-            y_pred_list.append(predict_labels_log(weights_list[i], tX_test_list[i]))
-        else:
-            y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
+        y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
+
     return y_pred_list
 
 

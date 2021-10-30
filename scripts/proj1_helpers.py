@@ -27,28 +27,17 @@ def load_csv_data(data_path, sub_sample=False):
 def predict_labels(weights, data):
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = np.dot(data, weights)
-    y_pred[np.where(y_pred <= 0)] = -1
-    y_pred[np.where(y_pred > 0)] = 1
-    
-    return y_pred
-
-def predict_labels_log(weights, data):
-    """Generates class predictions given weights, and a test data matrix"""
-    y_pred = np.dot(data, weights)
     y_pred[np.where(y_pred <= 0.5)] = -1
     y_pred[np.where(y_pred > 0.5)] = 1
-    
+
     return y_pred
 
-def compute_score(y, x, weights, logistic = False):
-    if logistic:
-        y_pred = predict_labels_log(weights, x)
-        y_pred = np.squeeze(y_pred)
-        y_pred = np.where(y_pred == -1, 0, y_pred)
-    else:
-        y_pred = predict_labels(weights, x)
-    
+def compute_score(y, x, weights):
+    y_pred = predict_labels(weights, x)
+    y_pred = np.squeeze(y_pred)
+    y_pred = np.where(y_pred == -1, 0, y_pred)
     score = (y == y_pred).sum()
+    
     return score
 
 def create_csv_submission(ids, y_pred, name):
