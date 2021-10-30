@@ -2,8 +2,6 @@ import numpy as np
 from proj1_helpers import *
 from helpers_data import *
 
-
-
 ##################### LOSSES #####################
 def compute_loss(y, tx, w):
     """Calculate the MSE loss."""
@@ -182,8 +180,8 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
         w = w - gamma * gradient
         
         # log info
-        # if iter % 100 == 0:
-        #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
         # converge criterion
         if loss < 0:
