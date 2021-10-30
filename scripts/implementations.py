@@ -130,10 +130,6 @@ def least_squares(y, tx):
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""
     lambda_pr = lambda_ * 2 * len(y)
-    # if np.linalg.det(tx.T @ tx + lambda_pr * np.eye(tx.shape[1])) == 0:
-    #     w= np.zeros((tx.shape[1], 1))
-    #     loss= 1000
-    # else:
     w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
     loss = compute_loss(y, tx, w)
     return w, loss
