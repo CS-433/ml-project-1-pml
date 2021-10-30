@@ -18,8 +18,8 @@ def standardize(data, m = None, s = None):
 
 def clean_data(tX_list, tX_test_list, y_list):
     """ Clean the dataset by removing outliers, unuseful features, and adding the 
-    log feature of skewed features """
-    
+    log feature of skewed features. Finally, we standardize the features. """
+
     alpha = 0.98
     for i in range(6):
         dist_fr_mean = np.std(tX_list[i], axis = 0)/(np.sqrt(1-alpha))
@@ -66,6 +66,8 @@ def clean_data(tX_list, tX_test_list, y_list):
 #####################
 
 def separate_dataset(tX, ids, y = None):
+    """ Separate the dataset in 6 sub-datasets. 
+    We also change the -1 values of output vector y into 0."""
     tX_list = []
     y_list = []
     ids_list = []
@@ -101,6 +103,10 @@ def build_k_indices(y, k_fold):
 
 
 def build_poly_log(x_tr, degree, x_te = None, dataset = 0):
+    """ We perform data expansion using polynomial basis.
+    We perform this extension only on the base features
+    (not on the added log features)."""
+    
     num = 0
     if dataset == 0:
         num = 11

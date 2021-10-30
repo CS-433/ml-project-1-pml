@@ -33,11 +33,12 @@ def predict_labels(weights, data):
     return y_pred
 
 def compute_score(y, x, weights):
+    """ Compute the score (i.e. number of good predictions) """
     y_pred = predict_labels(weights, x)
     y_pred = np.squeeze(y_pred)
     y_pred = np.where(y_pred == -1, 0, y_pred)
     score = (y == y_pred).sum()
-    
+
     return score
 
 def create_csv_submission(ids, y_pred, name):

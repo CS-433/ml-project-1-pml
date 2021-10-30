@@ -6,7 +6,7 @@ from helpers_data import *
 
 ##################### LOSSES #####################
 def compute_loss(y, tx, w):
-    """Calculate the loss."""
+    """Calculate the MSE loss."""
     loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
     return loss
 
@@ -84,8 +84,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 
-
-##################### METHODS
+##################### METHODS #####################
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     w = initial_w
@@ -276,7 +275,6 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     return loss_tr, score, weights
 
 
-
 ##################### EVAL #####################
 
 
@@ -287,48 +285,3 @@ def separated_eval(weights_list, tX_test_list):
 
     return y_pred_list
 
-
-
-
-
-# def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 8), lambdas = np.logspace(-8, -1, 10)):
-#     # Ridge regression with K-fold
-#     k_indices = build_k_indices(y, k_fold)
-
-#     rmse_te_tmp = np.empty((len(degrees),len(lambdas)))
-#     for index_degree, degree in enumerate(degrees):
-#         for index_lambda, lambda_ in enumerate(lambdas):
-#             loss_te_tmp = 0
-#             for k in range(k_fold):
-#                 _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_,), log)
-#                 loss_te_tmp = loss_te_tmp + loss_te
-#             rmse_te_tmp[index_degree, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
-#     rmse_te = np.nanmin(rmse_te_tmp)
-#     Ind_best_param = np.where(rmse_te_tmp == rmse_te)
-#     BestDeg = degrees[np.squeeze(Ind_best_param[0])]
-#     BestLambda = lambdas[np.squeeze(Ind_best_param[1])]
-#     return rmse_te, BestDeg, BestLambda
-
-
-# def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log = False):
-#     """return the loss of ridge regression."""
-
-#     max_iter= 1000
-    
-
-#     indices_te = k_indices[k]
-#     indices_tr = np.delete(k_indices, k, axis=0)
-#     indices_tr = np.concatenate(indices_tr, axis= None)
-#     x_tr = x[indices_tr]
-#     y_tr = y[indices_tr]
-#     x_te = x[indices_te]
-#     y_te = y[indices_te]
-    
-#     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
-#     initial_w = np.zeros((x_tr_poly.shape[1], 1))
-
-#     loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, gamma, lambda_)
-    
-#     loss_te = compute_loss_log(y_te, x_te_poly, weights)
-    
-#     return loss_tr, loss_te, weights
