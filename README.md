@@ -25,7 +25,7 @@ After running the command a file called `result.csv` will be created in the `scr
 
 ## Files
 The different files of the `scripts` directory are :
-* `graphs.ipynb` : allows us to visualized the datas' distribution to then choose which feature to remove and the that get their log transformation added to the data.
+* `graphs.ipynb` : allows us to visualized the datas' distribution to then choose which feature to remove and which ones that get their log transformation added to the data.
 * `helpers_data.py` : contains the functions used to separate the data in differents data sets and pre-processed it.
 * `implementations.py` : contains the implementation of the 6 machine learning models asked for this project, as well as the functions used to find the best hyper-parameters for each model.
 * `proj1_helpers.py` : contains helper functions to load the data from .csv files, predict label, compute score of a prediction and create a .csv file for submission.
