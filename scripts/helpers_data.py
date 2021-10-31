@@ -61,23 +61,6 @@ def clean_data(tX_list, tX_test_list, y_list):
     tX_test_list[5] = np.append(tX_test_list[5], np.log(tX_test_list[5][:,[0,2,4,9]]), axis = 1)
     
 
-
-
-
-
-    #Test removing correlated columns (0.85 +)
-    #tX_list[0]=np.delete(tX_list[0], [2], axis=1)
-    #tX_list[3]=np.delete(tX_list[3], [2], axis=1)
-    #tX_list[4]=np.delete(tX_list[4], [18], axis=1)
-    #tX_list[5]=np.delete(tX_list[5], [2], axis=1)
-
-    #tX_test_list[0]=np.delete(tX_test_list[0], [2], axis=1)
-    #tX_test_list[3]=np.delete(tX_test_list[3], [2], axis=1)
-    #tX_test_list[4]=np.delete(tX_test_list[4], [18], axis=1)
-    #tX_test_list[5]=np.delete(tX_test_list[5], [2], axis=1)
-
-
-
     for i in range(6):
         tX_list[i], mean, std = standardize(tX_list[i])
         tX_test_list[i] = standardize(tX_test_list[i], mean, std)

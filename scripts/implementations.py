@@ -98,7 +98,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
         if n_iter > 1 and np.abs(loss - loss_prev) < threshold:
             break
         if loss == np.inf or loss == np.nan:
-            print('loss error')
+            # print('loss error')
             break
         loss_prev = loss
     return w, loss
@@ -167,7 +167,6 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
     threshold = 1e-7
     loss_prev = 0
 
-    # build tx
     w = initial_w
     y = y.reshape((-1,1))
     # start the logistic regression
@@ -181,10 +180,10 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
         # if iter % 100 == 0:
         #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
-        # converge criterion
         if loss < 0:
             print('NEGATIVE LOSS')
             break
+        # converge criterion
         if iter > 1 and np.abs(loss - loss_prev) < threshold:
             break
         loss_prev = loss
@@ -230,15 +229,13 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
 
-    loss_tr=0
-
     if (function == 1):
         max_iter= 300
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_GD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
         score = compute_score(y_te, x_te_poly, weights)
 
-    if (function == 2):
+    elif (function == 2):
         max_iter= 1000
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_SGD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
