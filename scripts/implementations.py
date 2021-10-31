@@ -2,11 +2,9 @@ import numpy as np
 from proj1_helpers import *
 from helpers_data import *
 
-
-
 ##################### LOSSES #####################
 def compute_loss(y, tx, w):
-    """Calculate the loss."""
+    """Calculate the MSE loss."""
     loss = ((y - tx.dot(w))**2).sum()/(2*len(y))   #MSE
     return loss
 
@@ -84,8 +82,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 
-
-##################### METHODS
+##################### METHODS #####################
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     w = initial_w
@@ -131,12 +128,17 @@ def least_squares(y, tx):
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""
     lambda_pr = lambda_ * 2 * len(y)
+<<<<<<< HEAD
     if np.linalg.det(tx.T @ tx + lambda_pr * np.eye(tx.shape[1])) == 0:
         w= np.zeros((tx.shape[1], 1))
         loss= 1000
     else:
         w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
         loss = compute_loss(y, tx, w)
+=======
+    w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
+    loss = compute_loss(y, tx, w)
+>>>>>>> babaf19b85a0789a548d964f8089ece5e3cad7b0
     return w, loss
 
 
@@ -185,8 +187,8 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
         w = w - gamma * gradient
         
         # log info
-        # if iter % 100 == 0:
-        #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
         # converge criterion
         if loss < 0:
@@ -204,22 +206,22 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
 def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1), dataset = 0):
     """Find the best hyper parameter for a given model using k-fold cross validation."""
     k_indices = build_k_indices(y, k_fold)
-    rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
+    score_grid = np.empty((len(degrees), len(gammas),len(lambdas)))
 
     for index_degree, degree in enumerate(degrees):
         for index_gamma, gamma in enumerate(gammas):
             for index_lambda, lambda_ in enumerate(lambdas):
-                loss_te_tmp = 0
+                score_tmp = 0
                 for k in range(k_fold):
-                    _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), dataset)
-                    loss_te_tmp = loss_te_tmp + loss_te
-                rmse_te_tmp[index_degree, index_gamma, index_lambda]= loss_te_tmp / k_fold
-    rmse_te = np.nanmax(rmse_te_tmp)
-    Ind_best_param = np.where(rmse_te_tmp == rmse_te)
+                    _, score_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_, gamma), dataset)
+                    score_tmp = score_tmp + score_te
+                score_grid[index_degree, index_gamma, index_lambda]= score_tmp / k_fold
+    best_score = np.nanmax(score_grid)
+    Ind_best_param = np.where(score_grid == best_score)
     BestDeg = degrees[np.squeeze(Ind_best_param[0][0])]
     BestGamma = gammas[np.squeeze(Ind_best_param[1][0])]
     BestLambda = lambdas[np.squeeze(Ind_best_param[2][0])]
-    return rmse_te, BestDeg, BestLambda, BestGamma
+    return best_score, BestDeg, BestLambda, BestGamma
 
 
 ##################### CROSS VALIDATION #####################
@@ -243,22 +245,23 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
         max_iter= 300
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_GD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     if (function == 2):
         max_iter= 1000
         initial_w = np.zeros(x_tr_poly.shape[1])
         weights, loss_tr = least_squares_SGD(y_tr, x_tr_poly, initial_w, max_iter, args[1])
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     elif (function == 3):
         weights, loss_tr = least_squares(y_tr, x_tr_poly)
         #loss_te = compute_loss(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     elif (function == 4):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         #loss_te = compute_loss(y_te, x_te_poly, weights)
+<<<<<<< HEAD
         score = compute_score(y_te, x_te_poly, weights, True)
     
     elif (function == 5):
@@ -267,13 +270,16 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
         weights, loss_tr = logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
         score = compute_score(y_te, x_te_poly, weights, True)
+=======
+        score = compute_score(y_te, x_te_poly, weights)
+>>>>>>> babaf19b85a0789a548d964f8089ece5e3cad7b0
 
     elif (function == 6):
         max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
         weights, loss_tr = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0], args[1])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
 
     else:
         print('error function name')
@@ -281,61 +287,13 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     return loss_tr, score, weights
 
 
-
 ##################### EVAL #####################
 
 
-def separated_eval(weights_list, tX_test_list, logistic = False):
+def separated_eval(weights_list, tX_test_list):
     y_pred_list = []
     for i in range(6):
-        if logistic:
-            y_pred_list.append(predict_labels_log(weights_list[i], tX_test_list[i]))
-        else:
-            y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
+        y_pred_list.append(predict_labels(weights_list[i], tX_test_list[i]))
+
     return y_pred_list
 
-
-
-
-
-# def grid_search(y, tX, function, log = False, k_fold = 4, degrees = range(1, 8), lambdas = np.logspace(-8, -1, 10)):
-#     # Ridge regression with K-fold
-#     k_indices = build_k_indices(y, k_fold)
-
-#     rmse_te_tmp = np.empty((len(degrees),len(lambdas)))
-#     for index_degree, degree in enumerate(degrees):
-#         for index_lambda, lambda_ in enumerate(lambdas):
-#             loss_te_tmp = 0
-#             for k in range(k_fold):
-#                 _, loss_te, _ = cross_validation(y, tX, k_indices, k, degree, function, (lambda_,), log)
-#                 loss_te_tmp = loss_te_tmp + loss_te
-#             rmse_te_tmp[index_degree, index_lambda]= np.sqrt(2 * loss_te_tmp / k_fold)
-#     rmse_te = np.nanmin(rmse_te_tmp)
-#     Ind_best_param = np.where(rmse_te_tmp == rmse_te)
-#     BestDeg = degrees[np.squeeze(Ind_best_param[0])]
-#     BestLambda = lambdas[np.squeeze(Ind_best_param[1])]
-#     return rmse_te, BestDeg, BestLambda
-
-
-# def cross_validation_log_len(y, x, k_indices, k, degree, lambda_ , gamma , log = False):
-#     """return the loss of ridge regression."""
-
-#     max_iter= 1000
-    
-
-#     indices_te = k_indices[k]
-#     indices_tr = np.delete(k_indices, k, axis=0)
-#     indices_tr = np.concatenate(indices_tr, axis= None)
-#     x_tr = x[indices_tr]
-#     y_tr = y[indices_tr]
-#     x_te = x[indices_te]
-#     y_te = y[indices_te]
-    
-#     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, log, x_te)
-#     initial_w = np.zeros((x_tr_poly.shape[1], 1))
-
-#     loss_tr, weights = reg_logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, gamma, lambda_)
-    
-#     loss_te = compute_loss_log(y_te, x_te_poly, weights)
-    
-#     return loss_tr, loss_te, weights

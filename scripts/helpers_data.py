@@ -2,9 +2,11 @@ import numpy as np
 
 #####################
 def normalize(data):
+    """ Normalize the features """
     return (data-np.min(data, axis = 0))/(np.max(data, axis = 0)-np.min(data, axis = 0))
 
 def standardize(data, m = None, s = None):
+    """ Standardize the features """
     if m is None:
         m = np.average(data, axis = 0)
         s = np.std(data, axis = 0)
@@ -15,6 +17,8 @@ def standardize(data, m = None, s = None):
         return data
 
 def clean_data(tX_list, tX_test_list, y_list):
+    """ Clean the dataset by removing outliers, unuseful features, and adding the 
+    log feature of skewed features. Finally, we standardize the features. """
 
     alpha = 0.97
     for i in range(6):
@@ -81,7 +85,9 @@ def clean_data(tX_list, tX_test_list, y_list):
     return tX_list, tX_test_list, y_list
 #####################
 
-def separate_dataset(tX, ids, y = None, logistic = False):
+def separate_dataset(tX, ids, y = None):
+    """ Separate the dataset in 6 sub-datasets. 
+    We also change the -1 values of output vector y into 0."""
     tX_list = []
     y_list = []
     ids_list = []
@@ -117,6 +123,10 @@ def build_k_indices(y, k_fold):
 
 
 def build_poly_log(x_tr, degree, x_te = None, dataset = 0):
+    """ We perform data expansion using polynomial basis.
+    We perform this extension only on the base features
+    (not on the added log features)."""
+    
     num = 0
     if dataset == 0:
         num = 11
@@ -139,20 +149,6 @@ def build_poly_log(x_tr, degree, x_te = None, dataset = 0):
         poly_te = np.ones((len(x_te), 1))
         for deg in range(1, degree+1):
             poly_te = np.c_[poly_te, np.power(x_te[:,:num], deg)]
-
-    # log_tr = np.ones((len(x_tr), 1))
-    # log_te = np.ones((len(x_te), 1))
-
-    # if log:
-    #     for i in range(x_tr.shape[1]):
-    #         if (np.all(x_tr[:,i] > 0) and np.all(x_te[:,i] > 0)):
-    #             log_tr = np.c_[log_tr, np.log(x_tr[:,i])]
-    #             log_te = np.c_[log_te, np.log(x_te[:,i])]
-    #     poly_tr = np.c_[poly_tr, log_tr[:,1:]]
-    #     poly_te = np.c_[poly_te, log_te[:,1:]]
-
-    # poly_tr[:,1:] = standardize(poly_tr[:,1:])
-    # poly_te[:,1:] = standardize(poly_te[:,1:])
     
     return poly_tr, poly_te
 
