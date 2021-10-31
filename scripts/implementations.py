@@ -145,11 +145,7 @@ def ridge_regression(y, tx, lambda_):
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     """implement logistic regression."""
-<<<<<<< HEAD
-    # init parameters
-=======
->>>>>>> 85c9c7b61ed43dc343b0ccda7dc7853ee7ed5f31
-    threshold = 1e-4
+    threshold = 1e-7
     w = initial_w
     loss_prev = 0
     y = y.reshape((-1,1))
@@ -161,15 +157,14 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         w -= gamma * grad
 
         # log info
-        if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # if iter % 100 == 0:
+        #   print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
         # converge criterion
         if iter > 1 and np.abs(loss - loss_prev) < threshold:
             break  
         loss_prev = loss
 
-    print("loss={l}".format(l=compute_loss_log(y, tx, w)))
     return w, loss 
 
 
@@ -208,10 +203,6 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
 
 def grid_search(y, tX, function, k_fold = 4, degrees = range(1, 15), lambdas = np.arange(1), gammas = np.arange(1), dataset = 0):
     """Find the best hyper parameter for a given model using k-fold cross validation."""
-<<<<<<< HEAD
-=======
-
->>>>>>> 85c9c7b61ed43dc343b0ccda7dc7853ee7ed5f31
     k_indices = build_k_indices(y, k_fold)
     rmse_te_tmp = np.empty((len(degrees), len(gammas),len(lambdas)))
 
@@ -246,6 +237,8 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     
     x_tr_poly, x_te_poly = build_poly_log(x_tr, degree, x_te, dataset)
 
+    loss_tr=0
+
     if (function == 1):
         max_iter= 300
         initial_w = np.zeros(x_tr_poly.shape[1])
@@ -266,6 +259,13 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     elif (function == 4):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         #loss_te = compute_loss(y_te, x_te_poly, weights)
+        score = compute_score(y_te, x_te_poly, weights, True)
+    
+    elif (function == 5):
+        max_iter= 3000
+        initial_w = np.zeros((x_tr_poly.shape[1], 1))
+        weights, loss_tr = logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0])
+        #loss_te = compute_loss_log(y_te, x_te_poly, weights)
         score = compute_score(y_te, x_te_poly, weights, True)
 
     elif (function == 6):

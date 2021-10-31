@@ -45,37 +45,32 @@ def clean_data(tX_list, tX_test_list, y_list):
     tX_list[0] = np.append(tX_list[0], np.log(tX_list[0][:,[0,1,3,4,5,7,9,10]]), axis = 1)
     tX_list[1] = np.append(tX_list[1], np.log(tX_list[1][:,[0,2,4,7,9,11]]), axis = 1)
     tX_list[2] = np.append(tX_list[2], np.log(tX_list[2][:,[0,1,4,5,6,7,8,9,11]]), axis = 1)
-    #tX_list[3] = np.append(tX_list[3], np.log(tX_list[3][:,[0,2,4,6]]), axis = 1)
-    tX_list[3] = np.append(tX_list[3], np.log(tX_list[3][:,[0,4,6]]), axis = 1)
-    #tX_list[4] = np.append(tX_list[4], np.log(tX_list[4][:,[0,1,2,4,7,8,9,11,14,15,18]]), axis = 1)
-    tX_list[4] = np.append(tX_list[4], np.log(tX_list[4][:,[0,1,2,4,7,8,9,11,14,15]]), axis = 1)
-    #tX_list[5] = np.append(tX_list[5], np.log(tX_list[5][:,[0,2,4,9]]), axis = 1)
-    tX_list[5] = np.append(tX_list[5], np.log(tX_list[5][:,[0,4,9]]), axis = 1)
+    tX_list[3] = np.append(tX_list[3], np.log(tX_list[3][:,[0,2,4,6]]), axis = 1)
+    tX_list[4] = np.append(tX_list[4], np.log(tX_list[4][:,[0,1,2,4,7,8,9,11,14,15,18]]), axis = 1)
+    tX_list[5] = np.append(tX_list[5], np.log(tX_list[5][:,[0,2,4,9]]), axis = 1)
 
     tX_test_list[0] = np.append(tX_test_list[0], np.log(tX_test_list[0][:,[0,1,3,4,5,7,9,10]]), axis = 1)
     tX_test_list[1] = np.append(tX_test_list[1], np.log(tX_test_list[1][:,[0,2,4,7,9,11]]), axis = 1)
     tX_test_list[2] = np.append(tX_test_list[2], np.log(tX_test_list[2][:,[0,1,4,5,6,7,8,9,11]]), axis = 1)
-    #tX_test_list[3] = np.append(tX_test_list[3], np.log(tX_test_list[3][:,[0,2,4,6]]), axis = 1)
-    tX_test_list[3] = np.append(tX_test_list[3], np.log(tX_test_list[3][:,[0,4,6]]), axis = 1)
-    #tX_test_list[4] = np.append(tX_test_list[4], np.log(tX_test_list[4][:,[0,1,2,4,7,8,9,11,14,15,18]]), axis = 1)
-    tX_test_list[4] = np.append(tX_test_list[4], np.log(tX_test_list[4][:,[0,1,2,4,7,8,9,11,14,15]]), axis = 1)
-    #tX_test_list[5] = np.append(tX_test_list[5], np.log(tX_test_list[5][:,[0,2,4,9]]), axis = 1)
-    tX_test_list[5] = np.append(tX_test_list[5], np.log(tX_test_list[5][:,[0,4,9]]), axis = 1)
+    tX_test_list[3] = np.append(tX_test_list[3], np.log(tX_test_list[3][:,[0,2,4,6]]), axis = 1)
+    tX_test_list[4] = np.append(tX_test_list[4], np.log(tX_test_list[4][:,[0,1,2,4,7,8,9,11,14,15,18]]), axis = 1)
+    tX_test_list[5] = np.append(tX_test_list[5], np.log(tX_test_list[5][:,[0,2,4,9]]), axis = 1)
+    
 
 
 
 
 
     #Test removing correlated columns (0.85 +)
-    tX_list[0]=np.delete(tX_list[0], [2], axis=1)
-    tX_list[3]=np.delete(tX_list[3], [2], axis=1)
-    tX_list[4]=np.delete(tX_list[4], [18], axis=1)
-    tX_list[5]=np.delete(tX_list[5], [2], axis=1)
+    #tX_list[0]=np.delete(tX_list[0], [2], axis=1)
+    #tX_list[3]=np.delete(tX_list[3], [2], axis=1)
+    #tX_list[4]=np.delete(tX_list[4], [18], axis=1)
+    #tX_list[5]=np.delete(tX_list[5], [2], axis=1)
 
-    tX_test_list[0]=np.delete(tX_test_list[0], [2], axis=1)
-    tX_test_list[3]=np.delete(tX_test_list[3], [2], axis=1)
-    tX_test_list[4]=np.delete(tX_test_list[4], [18], axis=1)
-    tX_test_list[5]=np.delete(tX_test_list[5], [2], axis=1)
+    #tX_test_list[0]=np.delete(tX_test_list[0], [2], axis=1)
+    #tX_test_list[3]=np.delete(tX_test_list[3], [2], axis=1)
+    #tX_test_list[4]=np.delete(tX_test_list[4], [18], axis=1)
+    #tX_test_list[5]=np.delete(tX_test_list[5], [2], axis=1)
 
 
 
