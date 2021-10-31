@@ -46,18 +46,20 @@ for i in range(6):
         degree_vec = [2, 2, 1, 2, 2, 2]
         gamma_vec = [0.046415888336127774, 0.046415888336127774, 0.046415888336127774, 0.046415888336127774, 0.046415888336127774, 0.046415888336127774]
         max_iters = 300
+        
+        mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         initial_w = np.zeros(mat_tX.shape[1])
 
-        mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         w, l = least_squares_GD(y_list[i], mat_tX, initial_w, max_iters, gamma_vec[i])
 
     elif (function == 2):
         degree_vec = [2, 1, 2, 2, 1, 1]
         gamma_vec = [0.0001, 0.01, 0.0001, 0.001, 0.01, 0.01]
         max_iters = 1000
+
+        mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         initial_w = np.zeros(mat_tX.shape[1])
         
-        mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         w, l = least_squares_SGD(y_list[i], mat_tX, initial_w, max_iters, gamma_vec[i])
 
     elif (function == 3):
@@ -76,9 +78,10 @@ for i in range(6):
         degree_vec = [1, 2, 1, 2, 2, 2]
         gamma_vec = [0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
         max_iter= 7000
-        initial_w = np.zeros((mat_tX.shape[1],1))
 
         mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
+        initial_w = np.zeros((mat_tX.shape[1],1))
+
         w, l = logistic_regression(y_list[i], mat_tX, initial_w, max_iters, gamma_vec[i])
 
     elif (function == 6):
@@ -86,9 +89,10 @@ for i in range(6):
         lambda_vec = [1e-08, 3.1622776601683795e-05, 3.1622776601683795e-05, 1e-08, 1e-08, 1e-08]
         gamma_vec = [0.1, 0.1, 0.1, 0.1, 0.01, 0.1]
         max_iters = 7000
+        
+        mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         initial_w = np.zeros((mat_tX.shape[1],1))
 
-        mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         w, l = reg_logistic_regression(y_list[i], mat_tX, initial_w, max_iters, lambda_vec[i], gamma_vec[i])
 
     else:
