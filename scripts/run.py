@@ -75,8 +75,8 @@ for i in range(6):
         w, l = ridge_regression(y_list[i], mat_tX, lambda_vec[i])
     
     elif (function == 5):
-        degree_vec = [1, 2, 1, 2, 2, 2]
-        gamma_vec = [0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
+        degree_vec = [2,3,2,3,3,3]
+        gamma_vec = [0.1, 0.1, 0.1, 0.1, 0.01, 0.1]
         max_iter= 7000
 
         mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
@@ -89,7 +89,7 @@ for i in range(6):
         lambda_vec = [1e-08, 3.1622776601683795e-05, 3.1622776601683795e-05, 1e-08, 1e-08, 1e-08]
         gamma_vec = [0.1, 0.1, 0.1, 0.1, 0.01, 0.1]
         max_iters = 7000
-        
+
         mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         initial_w = np.zeros((mat_tX.shape[1],1))
 
