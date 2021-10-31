@@ -7,7 +7,7 @@ The goal of this project was to apply machine learning techniques to actual CERN
 #### Main
 * Python (only tested on >= 3.9) 
 * Numpy (only tested on >= 1.21)
-#### Visualization
+#### Visualization (`graphs.py`)
 * Matplotlib (only tested on >= 3.4)
 * Seaborn (only tested on >= 0.11)
 ### Submission file
