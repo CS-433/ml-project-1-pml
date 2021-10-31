@@ -1,6 +1,8 @@
 # Useful starting lines
-import numpy as np
 from implementations import *
+
+import numpy as np
+import sys
 
 
 ### LOAD DATASET ###
@@ -26,8 +28,7 @@ tX_list, tX_test_list, y_list = clean_data(tX_list, tX_test_list, y_list)
 # 4 = ridge regression
 # 5 = logistic regression
 # 6 = reg logistic regression
-function = 4
-
+function = int(sys.argv[1]) if len(sys.argv) == 2 else 4
 
 ### TRAINING ###
 weights_list = []
