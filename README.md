@@ -26,8 +26,8 @@ After running the command a file called `result.csv` will be created in the `scr
 ## Files
 The different files of the `scripts` directory are :
 * `graphs.ipynb`
-* `helpers_data.py`
-* `implementations.py`
+* `helpers_data.py` : contains the functions used to separate the data in differents data sets and pre-processed it.
+* `implementations.py` : contains the implementation of the 6 machine learning models ask for this project, as well as the functions used to find the best hyperparameters for the models.
 * `proj1_helpers.py`
 * `project1.ipynb`
-* `run.py`
+* `run.py` : 
