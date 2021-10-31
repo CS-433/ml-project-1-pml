@@ -1,6 +1,6 @@
 # The Higgs Boson Machine Learning Challenge
 
-The goal of this project was to apply machine learning techniques to actual CERN particle accelerator data to recreate the process of “discovering” the Higgs particle. Using the different physical properties of the particles’ collisions, we had to determine whether or not a Higgs boson was present. To solve this binary classification task we first preprocessed the data, by removing irrelevant features and transforming others, while splitting the dataset in relevant categories. We then  used different regression methods, hyper-parameter tuning and cross-validation to find the most accurate model. We achieved the best results using Least Squares, but maybe some more computer power could have allowed us to better tuneour logistic models.
+The goal of this project was to apply machine learning techniques to actual CERN particle accelerator data to recreate the process of “discovering” the Higgs particle. Using the different physical properties of the particles’ collisions, we had to determine whether or not a Higgs boson was present. To solve this binary classification task we first preprocessed the data, by removing irrelevant features and transforming others, while splitting the dataset in relevant categories. We then used different regression methods, hyper-parameter tuning and cross-validation to find the most accurate model. We achieved the best results using Least Squares, but maybe some more computer power could have allowed us to better tune our logistic models.
 
 ## Usage
 ### Dependencies
