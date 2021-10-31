@@ -71,12 +71,22 @@ for i in range(6):
         lambda_vec = [7.196856730011529e-08, 1e-10, 1e-10, 0.001389495494373139, 0.0002682695795279727, 1e-10]
         mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
         w, l = ridge_regression(y_list[i], mat_tX, lambda_vec[i])
+    
+    elif (function == 5):
+        degree_vec = [1, 2, 1, 2, 2, 2]
+        gamma_vec = [0.001, 0.001, 0.001, 0.001, 0.001, 0.001]
+        max_iter= 7000
+        initial_w = np.zeros((mat_tX.shape[1],1))
+
+        mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
+        weights, loss_tr = logistic_regression(y_list[i], mat_tX, initial_w, max_iters, lambda_vec[i])
+        
 
     elif (function == 6):
         degree_vec = [2, 3, 2, 4, 2, 3]
         lambda_vec = [1e-08, 5.62341325190349e-07, 1e-08, 3.1622776601683795e-05, 0.0017782794100389228, 5.62341325190349e-07]
         gamma_vec = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-        max_iters = 3000
+        max_iters = 7000
         initial_w = np.zeros((mat_tX.shape[1],1))
 
         mat_tX, mat_tX_test = build_poly_log(tX_list[i], degree_vec[i], tX_test_list[i], i)
