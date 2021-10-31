@@ -10,6 +10,8 @@ The goal of this project was to apply machine learning techniques to actual CERN
 #### Visualization (`graphs.ipynb`)
 * Matplotlib (only tested on >= 3.4)
 * Seaborn (only tested on >= 0.11)
+#### Data
+Before running the python file, you must extract `data/train.csv.zip` and `data/test.csv.zip` as `data/train.csv`and `data/test.csv` respectively.
 ### Submission file
 To create a submission file for aicrowd.com, you must run `python3 scripts/run.py <function_number>` where <function_number> is used to selected the function with which we want to run the algorithm :
 * 1 -> Least Squares Gradient Descent
