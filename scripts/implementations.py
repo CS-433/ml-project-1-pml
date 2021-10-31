@@ -128,17 +128,8 @@ def least_squares(y, tx):
 def ridge_regression(y, tx, lambda_):
     """implement ridge regression."""
     lambda_pr = lambda_ * 2 * len(y)
-<<<<<<< HEAD
-    if np.linalg.det(tx.T @ tx + lambda_pr * np.eye(tx.shape[1])) == 0:
-        w= np.zeros((tx.shape[1], 1))
-        loss= 1000
-    else:
-        w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
-        loss = compute_loss(y, tx, w)
-=======
     w = np.linalg.solve(tx.T @ tx + lambda_pr * np.eye(tx.shape[1]), tx.T @ y)
     loss = compute_loss(y, tx, w)
->>>>>>> babaf19b85a0789a548d964f8089ece5e3cad7b0
     return w, loss
 
 
@@ -187,8 +178,8 @@ def reg_logistic_regression(y, tx, initial_w, max_iter, lambda_, gamma):
         w = w - gamma * gradient
         
         # log info
-        if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # if iter % 100 == 0:
+        #     print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
 
         # converge criterion
         if loss < 0:
@@ -261,18 +252,14 @@ def cross_validation(y, x, k_indices, k, degree, function, args = None, dataset 
     elif (function == 4):
         weights, loss_tr = ridge_regression(y_tr, x_tr_poly, args[0])
         #loss_te = compute_loss(y_te, x_te_poly, weights)
-<<<<<<< HEAD
-        score = compute_score(y_te, x_te_poly, weights, True)
+        score = compute_score(y_te, x_te_poly, weights)
     
     elif (function == 5):
         max_iter= 3000
         initial_w = np.zeros((x_tr_poly.shape[1], 1))
-        weights, loss_tr = logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[0])
+        weights, loss_tr = logistic_regression(y_tr, x_tr_poly, initial_w, max_iter, args[1])
         #loss_te = compute_loss_log(y_te, x_te_poly, weights)
-        score = compute_score(y_te, x_te_poly, weights, True)
-=======
         score = compute_score(y_te, x_te_poly, weights)
->>>>>>> babaf19b85a0789a548d964f8089ece5e3cad7b0
 
     elif (function == 6):
         max_iter= 3000
