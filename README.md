@@ -4,8 +4,12 @@ The goal of this project was to apply machine learning techniques to actual CERN
 
 ## Usage
 ### Dependencies
-* Python >= 3.9
-* Numpy >= 1.21
+#### Main
+* Python (only tested on >= 3.9) 
+* Numpy (only tested on >= 1.21)
+#### Visualization
+* Matplotlib (only tested on >= 3.4)
+* Seaborn (only tested on >= 0.11)
 ### Submission file
 To create a submission file for aicrowd.com, you must run `python3 scripts/run.py <function_number>` where <function_number> is used to selected the function with which we want to run the algorithm :
 * 1 -> Least Squares Gradient Descent
