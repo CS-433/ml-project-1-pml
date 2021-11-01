@@ -19,6 +19,7 @@ tX_test_list, ids_test_list = separate_dataset(tX_test, ids_test)
 
 tX_list, tX_test_list, y_list = clean_data(tX_list, tX_test_list, y_list)
 
+np.random.seed(2)
 
 ### CHOICE OF METHOD ###
 # FUNCTION
@@ -28,7 +29,7 @@ tX_list, tX_test_list, y_list = clean_data(tX_list, tX_test_list, y_list)
 # 4 = ridge regression
 # 5 = logistic regression
 # 6 = reg logistic regression
-function = int(sys.argv[1]) if len(sys.argv) == 2 else 4
+function = int(sys.argv[1]) if len(sys.argv) == 2 else 3
 
 ### TRAINING ###
 weights_list = []
