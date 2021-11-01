@@ -75,7 +75,8 @@ def separate_dataset(tX, ids, y = None):
     y_list = []
     ids_list = []
     for i in range(6):
-        if i < 4:            
+        if i < 4:       
+            #Get indices of lines with PRI_jet_num = 0,1,2,3 and with 1st column with/without -999     
             indices = np.logical_and((np.isclose(tX[:,22], np.floor((i+0.01) / 2.0))), (tX[:,0] == -999 if i % 2 == 0 else tX[:,0] != -999))
         else:
             indices = np.logical_and((np.any((np.isclose(tX[:,22], np.floor((i+0.01) / 2.0)), np.isclose(tX[:,22], np.floor((i+0.01) / 2.0)+1)), axis = 0)), (tX[:,0] == -999 if i % 2 == 0 else tX[:,0] != -999))
@@ -110,6 +111,7 @@ def build_poly_log(x_tr, degree, x_te = None, dataset = 0):
     We perform this extension only on the base features
     (not on the added log features)."""
     
+    #Number of base features (not including log features)
     num = 0
     if dataset == 0:
         num = 11
