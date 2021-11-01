@@ -13,7 +13,7 @@ The goal of this project was to apply machine learning techniques to actual CERN
 #### Data
 Before running the python file, you must extract `data/train.csv.zip` and `data/test.csv.zip` as `data/train.csv`and `data/test.csv` respectively.
 ### Submission file
-To create a submission file for aicrowd.com, you must run `python3 scripts/run.py <function_number>` where <function_number> is used to selected the function with which we want to run the algorithm :
+To create a submission file for aicrowd.com, you must go in the scripts directory and run `python3 run.py <function_number>` where <function_number> is used to selected the function with which we want to run the algorithm :
 * 1 -> Least Squares Gradient Descent
 * 2 -> Least Squares Stochstic Gradient Descent
 * 3 -> Least Squares
@@ -21,7 +21,7 @@ To create a submission file for aicrowd.com, you must run `python3 scripts/run.p
 * 5 -> Logistic Regression
 * 6 -> Regularized Logistic Regression 
 
-If no number is specified, the default function that will be used is Ridge Regression.
+If no number is specified, the default function that will be used is Least Squares.
 
 After running the command a file called `result.csv` will be created in the `scripts` directory, and can directly be uploaded to aicrowd.com to make a submission.
 
