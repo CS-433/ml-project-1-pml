@@ -20,7 +20,7 @@ def clean_data(tX_list, tX_test_list, y_list):
     """ Clean the dataset by removing outliers, unuseful features, and adding the 
     log feature of skewed features. Finally, we standardize the features. """
 
-    alpha = 0.97
+    alpha = 0.98
     for i in range(6):
         dist_fr_mean = np.std(tX_list[i], axis = 0)/(np.sqrt(1-alpha))
         mean = np.average(tX_list[i], axis = 0)
